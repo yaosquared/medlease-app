@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useColorMode } from '@vueuse/core'
-import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
+import type { BreadcrumbItem, DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 
 import { useAuthStore } from '@/stores/auth'
 import { useProfileStore } from '@/stores/profile'
-import { onMounted } from 'vue'
+import avatar from '@/assets/avatar.png'
 
 const router = useRouter()
 const route = useRoute()
@@ -24,8 +24,11 @@ const colorMode = useColorMode()
 const open = ref(true)
 
 onMounted(async () => {
-  await profileStore.fetchProfile()
+  if (user.value) {
+    await profileStore.fetchProfile()
+  }
 })
+
 const navItems = computed<NavigationMenuItem[]>(() => {
   const common: NavigationMenuItem[] = [
     { label: 'Dashboard', icon: 'i-lucide-layout-dashboard', to: '/dashboard' },
@@ -37,7 +40,7 @@ const navItems = computed<NavigationMenuItem[]>(() => {
       { label: 'Users', icon: 'i-lucide-users', to: '/users' },
     ],
     OrgAdmin: [
-      { label: 'Organizations', icon: 'i-lucide-building-2', to: '/organizations' },
+      { label: 'Organization', icon: 'i-lucide-building-2', to: '/organizations/me' },
       { label: 'Users', icon: 'i-lucide-users', to: '/users' },
       { label: 'Equipments', icon: 'i-lucide-monitor', to: '/equipments' },
       { label: 'Contracts', icon: 'i-lucide-file-text', to: '/contracts' },
@@ -59,7 +62,7 @@ const navItems = computed<NavigationMenuItem[]>(() => {
 const userDetail = computed(() => ({
   name: profile.value?.fullName || '',
   avatar: {
-    src: 'https://github.com/benjamincanac.png',
+    src: avatar,
     alt: 'User profile image',
   },
 }))
@@ -118,6 +121,18 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
     },
   ],
 ])
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() =>
+  route.matched
+    .filter((r) => r.meta?.title)
+    .map((r, index, arr) => {
+      const isLast = index === arr.length - 1
+      return {
+        label: r.meta.title as string,
+        ...(isLast ? {} : { to: r.path }),
+      }
+    }),
+)
 </script>
 
 <template>
@@ -132,7 +147,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
       }"
     >
       <template #header>
-        <div class="flex items-center justify-center w-full h-10">
+        <div>
           <div class="flex items-center gap-2 overflow-hidden">
             <div
               class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold shrink-0"
@@ -145,7 +160,6 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           </div>
         </div>
       </template>
-
       <template #default="{ state }">
         <UNavigationMenu
           :key="state"
@@ -154,7 +168,6 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           :ui="{ link: 'px-1.5 py-3 overflow-hidden' }"
         />
       </template>
-
       <template #footer>
         <UDropdownMenu
           :items="userItems"
@@ -176,20 +189,19 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
         </UDropdownMenu>
       </template>
     </USidebar>
-
-    <div class="flex-1 flex flex-col">
+    <div class="h-screen flex-1 flex flex-col">
       <div class="h-(--ui-header-height) shrink-0 flex items-center px-4 border-b border-default">
         <UButton
           icon="i-lucide-panel-left"
+          class="cursor-pointer"
           color="neutral"
           variant="ghost"
           aria-label="Toggle sidebar"
           @click="open = !open"
         />
-        <h2 class="mx-2">{{ route.meta.title }}</h2>
+        <UBreadcrumb :items="breadcrumbs" class="pl-2" />
       </div>
-
-      <div class="flex flex-col p-4">
+      <div class="flex-1 flex flex-col p-4">
         <slot />
       </div>
     </div>

@@ -6,9 +6,12 @@ import Contracts from '@/views/Contracts.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Equipments from '@/views/Equipments.vue'
 import Organizations from '@/views/Organizations.vue'
+import OrganizationDetail from '@/components/organizations/OrganizationDetail.vue'
 import Payments from '@/views/Payments.vue'
 import Profile from '@/views/Profile.vue'
 import Users from '@/views/Users.vue'
+import UserDetail from '@/components/users/UserDetail.vue'
+import EquipmentDetails from '@/components/equipments/EquipmentDetails.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -33,23 +36,64 @@ const router = createRouter({
     },
     {
       path: '/organizations',
-      component: Organizations,
       meta: {
         title: 'Organizations',
         requiresAuth: true,
         layout: 'app',
         roles: ['SuperAdmin', 'OrgAdmin'],
       },
+      children: [
+        {
+          path: '',
+          component: Organizations,
+          meta: { roles: ['SuperAdmin'] },
+        },
+        {
+          path: 'me',
+          component: OrganizationDetail,
+          meta: {
+            title: 'Organization Details',
+            requiresAuth: true,
+            layout: 'app',
+            roles: ['OrgAdmin'],
+          },
+        },
+        {
+          path: ':orgId',
+          component: OrganizationDetail,
+          meta: {
+            title: 'Organization Details',
+            requiresAuth: true,
+            layout: 'app',
+            roles: ['SuperAdmin'],
+          },
+        },
+      ],
     },
     {
       path: '/users',
-      component: Users,
       meta: {
         title: 'Users',
         requiresAuth: true,
         layout: 'app',
         roles: ['SuperAdmin', 'OrgAdmin'],
       },
+      children: [
+        {
+          path: '',
+          component: Users,
+        },
+        {
+          path: ':orgId',
+          component: UserDetail,
+          meta: {
+            title: 'User Details',
+            requiresAuth: true,
+            layout: 'app',
+            roles: ['SuperAdmin', 'OrgAdmin'],
+          },
+        },
+      ],
     },
     {
       path: '/profile',
@@ -58,13 +102,30 @@ const router = createRouter({
     },
     {
       path: '/equipments',
-      component: Equipments,
       meta: {
         title: 'Equipments',
         requiresAuth: true,
         layout: 'app',
         roles: ['OrgAdmin', 'Staff'],
       },
+      children: [
+        {
+          path: '',
+          component: Equipments,
+          meta: { roles: ['OrgAdmin', 'Staff'] },
+        },
+
+        {
+          path: ':equipmentId',
+          component: EquipmentDetails,
+          meta: {
+            title: 'Equipment Details',
+            requiresAuth: true,
+            layout: 'app',
+            roles: ['OrgAdmin', 'Staff'],
+          },
+        },
+      ],
     },
     {
       path: '/contracts',

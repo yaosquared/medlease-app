@@ -7,7 +7,18 @@ import ui from '@nuxt/ui/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), ui() /** vueDevTools() **/],
+  plugins: [
+    vue(),
+    ui({
+      ui: {
+        formField: {
+          slots: {
+            error: 'mt-2 text-error text-xs',
+          },
+        },
+      },
+    }) /** vueDevTools() **/,
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

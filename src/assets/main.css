@@ -7,8 +7,10 @@
     margin: 0;
     padding: 0;
   }
-}
 
-.text-error {
-  font-size: 13px !important;
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
 }

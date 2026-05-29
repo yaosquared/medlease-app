@@ -22,6 +22,7 @@ const fields = [
     label: 'Username',
     placeholder: 'Enter your username',
     required: true,
+    ui: { error: 'text-xs' },
   },
   {
     name: 'password',
@@ -29,6 +30,7 @@ const fields = [
     label: 'Password',
     placeholder: 'Enter your password',
     required: true,
+    ui: { error: 'text-xs' },
   },
 ]
 
