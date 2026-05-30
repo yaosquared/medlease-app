@@ -127,9 +127,18 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() =>
     .filter((r) => r.meta?.title)
     .map((r, index, arr) => {
       const isLast = index === arr.length - 1
+      if (isLast) return { label: r.meta.title as string }
+
+      const resolved = r.name
+        ? router.resolve({ name: r.name as string, params: route.params })
+        : null
+
+      // NOTE: when in /contracts/{contractId}/history route and {contractId} is clicked, reroute to /contracts
+      const to = resolved?.path ?? r.path.replace(/\/:[\w]+/g, '')
+
       return {
         label: r.meta.title as string,
-        ...(isLast ? {} : { to: r.path }),
+        to,
       }
     }),
 )

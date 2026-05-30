@@ -1,78 +1,80 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useMutation, useQueryCache } from '@pinia/colada'
-import { storeToRefs } from 'pinia'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
 
-import { updateOwnOrgUser } from '@/apis/users'
-import { useAuthStore } from '@/stores/auth'
-import { ROLE_INPUT_OPTIONS } from '@/constants/users.ts'
-import { updateUserSchema } from '@/schemas/user'
-import type { TUpdateUserSchema } from '@/schemas/user'
+import { createContract } from '@/apis/contracts'
+import { createContractSchema } from '@/schemas/contract'
+import type { TCreateContractSchema } from '@/schemas/contract'
 import type { TApiErrorResponse } from '@/types/api'
 import { getApiErrorMessages } from '@/utils/errors'
 
 const props = defineProps<{
-  userId: string
+  equipmentId: string
 }>()
 
 const open = defineModel<boolean>('open')
-const state = defineModel<TUpdateUserSchema>('form', {
-  default: () => ({ contactNumber: '', role: 2 }),
-})
 
-const { isSuperAdmin } = storeToRefs(useAuthStore())
 const toast = useToast()
 const queryCache = useQueryCache()
 
+const state = reactive({
+  equipmentId: props.equipmentId,
+  startDate: null,
+  endDate: null,
+  notes: '',
+})
+
 const { mutate, asyncStatus, error } = useMutation({
-  mutation: (payload: TUpdateUserSchema) => updateOwnOrgUser(props.userId, payload),
+  mutation: (payload: TCreateContractSchema) => createContract(payload),
   onSuccess: () => {
     open.value = false
-    toast.add({ title: 'User updated successfully', color: 'success' })
+    toast.add({ title: 'Contract created successfully', color: 'success' })
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({
-      title: 'Update failed',
+      title: 'Failed to create contract',
       description: err?.response?.data?.message ?? 'Something went wrong.',
       color: 'error',
     })
   },
-  onSettled: () =>
-    queryCache.invalidateQueries({
-      key: [isSuperAdmin.value ? 'super-admin' : 'admin', 'user', props.userId],
-    }),
+  onSettled: () => queryCache.invalidateQueries({ key: ['contracts'] }),
 })
 
-const onSubmit = (payload: FormSubmitEvent<TUpdateUserSchema>) => {
-  mutate(payload.data)
+const onSubmit = (payload: FormSubmitEvent<TCreateContractSchema>) => {
+  mutate({
+    equipmentId: payload.data.equipmentId,
+    startDate: payload.data.startDate,
+    endDate: payload.data.endDate,
+    notes: payload.data.notes ?? '',
+  })
 }
 
 const isLoading = computed(() => asyncStatus.value === 'loading')
-const hasErrors = computed(() => !updateUserSchema.safeParse(state.value).success)
+const hasErrors = computed(() => !createContractSchema.safeParse(state).success)
 const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
 </script>
 
 <template>
-  <UModal v-model:open="open" title="Edit User">
+  <UModal v-model:open="open" title="Create Lease Contract">
     <template #body>
       <UForm
-        :schema="updateUserSchema"
+        :schema="createContractSchema"
         :state="state"
         class="flex flex-col gap-4"
         @submit="onSubmit"
       >
-        <UFormField label="Contact Number" name="contactNumber">
-          <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
-        </UFormField>
-        <UFormField label="Role" name="role">
-          <USelect
-            v-model="state.role"
-            :items="ROLE_INPUT_OPTIONS"
-            value-key="value"
-            class="w-full"
-          />
+        <div class="grid grid-cols-2 gap-4">
+          <UFormField label="Start Date" name="startDate">
+            <UInputDate v-model="state.startDate" :ui="{ base: 'justify-center' }" class="w-full" />
+          </UFormField>
+          <UFormField label="End Date" name="endDate">
+            <UInputDate v-model="state.endDate" :ui="{ base: 'justify-center' }" class="w-full" />
+          </UFormField>
+        </div>
+        <UFormField label="Notes" name="notes">
+          <UTextarea v-model="state.notes" placeholder="Optional notes" class="w-full" />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />
         <div class="flex justify-end gap-2">
@@ -92,7 +94,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :disabled="hasErrors"
             :class="hasErrors ? 'cursor-not-allowed' : 'cursor-pointer'"
           >
-            Save changes
+            Create
           </UButton>
         </div>
       </UForm>

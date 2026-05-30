@@ -4,10 +4,10 @@ import { storeToRefs } from 'pinia'
 import { useMutation, useQueryCache } from '@pinia/colada'
 import type { AxiosError } from 'axios'
 
-import { deactivateUser, deactivateOwnOrgUser, updateOwnOrgUser } from '@/apis/users'
+import { deactivateUser, deactivateOwnOrgUser } from '@/apis/users'
 import { useAuthStore } from '@/stores/auth'
-import { ROLE_INPUT_OPTIONS } from '@/constants/users.ts'
 import type { TApiErrorResponse } from '@/types/api'
+import type { TUpdateUserSchema } from '@/schemas/user'
 import EditUserModal from './EditUserModal.vue'
 
 const props = defineProps<{
@@ -16,21 +16,19 @@ const props = defineProps<{
   role?: number
 }>()
 
-const { user } = storeToRefs(useAuthStore())
+const { isOrgAdmin } = storeToRefs(useAuthStore())
 const toast = useToast()
 const queryCache = useQueryCache()
 
 const showEditModal = ref(false)
 const showDeactivateModal = ref(false)
 
-const editForm = ref({
+const editForm = ref<TUpdateUserSchema>({
   contactNumber: props.contactNumber ?? '',
   role: props.role ?? 2,
 })
 
-const isOrgAdmin = computed(() => user.value?.role === 'OrgAdmin')
 const isDeactivating = computed(() => deactivateStatus.value === 'loading')
-const isUpdating = computed(() => updateStatus.value === 'loading')
 
 const { mutate: deactivate, asyncStatus: deactivateStatus } = useMutation({
   mutation: () => (isOrgAdmin.value ? deactivateOwnOrgUser(props.id) : deactivateUser(props.id)),
@@ -50,29 +48,6 @@ const { mutate: deactivate, asyncStatus: deactivateStatus } = useMutation({
       key: [isOrgAdmin.value ? 'admin' : 'super-admin', 'user', props.id],
     }),
 })
-
-const { mutate: update, asyncStatus: updateStatus } = useMutation({
-  mutation: (payload: typeof editForm.value) => updateOwnOrgUser(props.id, payload),
-  onSuccess: () => {
-    showEditModal.value = false
-    toast.add({ title: 'User updated successfully', color: 'success' })
-  },
-  onError: (err: AxiosError<TApiErrorResponse>) => {
-    toast.add({
-      title: 'Update failed',
-      description: err?.response?.data?.message ?? 'Something went wrong.',
-      color: 'error',
-    })
-  },
-  onSettled: () =>
-    queryCache.invalidateQueries({
-      key: [isOrgAdmin.value ? 'admin' : 'super-admin', 'user', props.id],
-    }),
-})
-
-const handleUpdate = (payload: typeof editForm.value) => {
-  update(payload)
-}
 </script>
 
 <template>
@@ -81,7 +56,6 @@ const handleUpdate = (payload: typeof editForm.value) => {
       v-if="isOrgAdmin"
       size="sm"
       color="neutral"
-      variant="outline"
       icon="i-lucide-pencil"
       class="cursor-pointer"
       @click="showEditModal = true"
@@ -91,6 +65,7 @@ const handleUpdate = (payload: typeof editForm.value) => {
     <UButton
       size="sm"
       color="error"
+      icon="i-lucide-ban"
       :loading="isDeactivating"
       :disabled="isDeactivating"
       class="cursor-pointer"
@@ -103,9 +78,7 @@ const handleUpdate = (payload: typeof editForm.value) => {
     v-if="isOrgAdmin"
     v-model:open="showEditModal"
     v-model:form="editForm"
-    :loading="isUpdating"
-    :role-options="ROLE_INPUT_OPTIONS"
-    @save="handleUpdate"
+    :user-id="id"
   />
   <ConfirmationModal
     v-model:open="showDeactivateModal"

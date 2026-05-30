@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useAuthStore } from '@/stores/auth'
 import SuperAdminDashboard from '@/components/dashboard/SuperAdminDashboard.vue'
 import OrgAdminDashboard from '@/components/dashboard/OrgAdminDashboard.vue'
 
-const { user } = storeToRefs(useAuthStore())
-const isOrgAdmin = computed(() => user.value?.role === 'OrgAdmin')
+const { isSuperAdmin } = storeToRefs(useAuthStore())
 </script>
 
 <template>
-  <OrgAdminDashboard v-if="isOrgAdmin" />
-  <SuperAdminDashboard v-else />
+  <SuperAdminDashboard v-if="isSuperAdmin" />
+  <OrgAdminDashboard v-else />
 </template>

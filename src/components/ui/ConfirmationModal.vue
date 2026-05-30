@@ -26,10 +26,15 @@ const emit = defineEmits<{
     </template>
     <template #footer>
       <div class="w-full flex justify-end gap-2">
-        <UButton color="neutral" variant="ghost" @click="model = false">
+        <UButton color="neutral" variant="ghost" class="cursor-pointer" @click="model = false">
           {{ cancelText ?? 'Cancel' }}
         </UButton>
-        <UButton :color="confirmColor ?? 'primary'" :loading="loading" @click="emit('confirm')">
+        <UButton
+          :color="confirmColor ?? 'primary'"
+          :loading="loading"
+          class="cursor-pointer"
+          @click="emit('confirm')"
+        >
           {{ confirmText ?? 'Confirm' }}
         </UButton>
       </div>

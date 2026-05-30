@@ -10,6 +10,7 @@ import { useAuthStore } from '@/stores/auth'
 import { loginSchema } from '@/schemas/auth'
 import type { TLoginSchema } from '@/types/auth'
 import type { TApiErrorResponse } from '@/types/api'
+import { getApiErrorMessages } from '@/utils/errors'
 
 const { setTokens } = useAuthStore()
 const toast = useToast()
@@ -54,13 +55,7 @@ const onSubmit = (payload: FormSubmitEvent<TLoginSchema>) => {
   mutate(payload.data)
 }
 
-const errorMessage = computed(() => {
-  if (!error.value) return null
-  return (
-    (error.value as AxiosError<TApiErrorResponse>)?.response?.data?.message ??
-    'Something went wrong.'
-  )
-})
+const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
 </script>
 
 <template>
@@ -73,10 +68,8 @@ const errorMessage = computed(() => {
     :submit="{ label: isLoading ? 'Signing in...' : 'Sign In' }"
     @submit="onSubmit"
   >
-    <template #footer>
-      <p v-if="errorMessage" class="text-sm text-center text-red-500">
-        {{ errorMessage }}
-      </p>
+    <template #validation>
+      <ApiErrorAlert :messages="errorMessage" />
     </template>
   </UAuthForm>
 </template>

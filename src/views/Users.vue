@@ -10,13 +10,13 @@ import { useAuthStore } from '@/stores/auth'
 import { ROLE_OPTIONS, USERS_PER_PAGE } from '@/constants/users'
 import type { TUser } from '@/types/users'
 
-const { user } = storeToRefs(useAuthStore())
+const { isSuperAdmin, isOrgAdmin } = storeToRefs(useAuthStore())
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 
 const page = ref(1)
 const roleFilter = ref<number | null>(null)
-const showCreateModal = ref(false)
+const showCreateUserModal = ref(false)
 
 const { data, asyncStatus, error } = useQuery({
   key: () => ['users', page.value, roleFilter.value],
@@ -26,11 +26,10 @@ const { data, asyncStatus, error } = useQuery({
       limit: USERS_PER_PAGE,
       role: roleFilter.value ?? undefined,
     }
-    return isOrgAdmin.value ? getOwnUsers(params) : getUsers(params)
+    return isSuperAdmin.value ? getUsers(params) : getOwnUsers(params)
   },
 })
 
-const isOrgAdmin = computed(() => user.value?.role === 'OrgAdmin')
 const rows = computed(() => data.value?.data ?? [])
 const total = computed(() => data.value?.totalCount ?? 0)
 
@@ -111,7 +110,7 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
 
 <template>
   <div class="h-full flex flex-col gap-4">
-    <CreateUserModal v-if="isOrgAdmin" v-model:open="showCreateModal" />
+    <CreateUserModal v-if="isOrgAdmin" v-model:open="showCreateUserModal" />
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load users
     </div>
@@ -129,7 +128,7 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
           v-if="isOrgAdmin"
           icon="i-lucide-plus"
           class="cursor-pointer ml-auto"
-          @click="showCreateModal = true"
+          @click="showCreateUserModal = true"
         >
           Add User
         </UButton>

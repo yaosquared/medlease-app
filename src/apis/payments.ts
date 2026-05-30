@@ -12,3 +12,9 @@ export const getPayments = async ({
   })
   return res.data
 }
+
+// TODO: POST post/api/admin/payments
+
+// TODO: GET get/api/admin/payments/{paymentId}
+
+// TODO: PATCH patch/api/admin/payments/{paymentId}/confirm

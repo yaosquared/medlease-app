@@ -1,32 +1,39 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import { useMutation, useQueryCache } from '@pinia/colada'
+import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
 
 import { createOwnOrgUser } from '@/apis/users'
 import { ROLE_INPUT_OPTIONS } from '@/constants/users'
+import { createUserSchema } from '@/schemas/user'
+import type { TCreateUserSchema } from '@/schemas/user'
 import type { TApiErrorResponse } from '@/types/api'
+import { getApiErrorMessages } from '@/utils/errors'
 
 const open = defineModel<boolean>('open')
 
 const toast = useToast()
 const queryCache = useQueryCache()
 
-const form = ref({
+const state = reactive({
   fullName: '',
   username: '',
   email: '',
   contactNumber: '',
   password: '',
-  role: 2,
+  role: 0,
 })
 
-const { mutate: create, asyncStatus } = useMutation({
-  mutation: () => createOwnOrgUser(form.value),
+const {
+  mutate: create,
+  asyncStatus,
+  error,
+} = useMutation({
+  mutation: (payload: TCreateUserSchema) => createOwnOrgUser(payload),
   onSuccess: () => {
     open.value = false
     toast.add({ title: 'User created successfully', color: 'success' })
-    queryCache.invalidateQueries({ key: ['users'] })
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({
@@ -35,55 +42,82 @@ const { mutate: create, asyncStatus } = useMutation({
       color: 'error',
     })
   },
+  onSettled: () => queryCache.invalidateQueries({ key: ['users'] }),
 })
 
+const onSubmit = (payload: FormSubmitEvent<TCreateUserSchema>) => {
+  create(payload.data)
+}
+
 const isLoading = computed(() => asyncStatus.value === 'loading')
+const hasErrors = computed(() => !createUserSchema.safeParse(state).success)
+const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
 </script>
 
 <template>
   <UModal v-model:open="open" title="Add User">
     <template #body>
-      <div class="flex flex-col gap-4">
-        <UFormField label="Full Name">
-          <UInput v-model="form.fullName" placeholder="Juan dela Cruz" class="w-full" />
+      <UForm
+        :schema="createUserSchema"
+        :state="state"
+        class="flex flex-col gap-4"
+        @submit="onSubmit"
+      >
+        <UFormField label="Full Name" name="fullName">
+          <UInput v-model="state.fullName" placeholder="e.g. Juan dela Cruz" class="w-full" />
         </UFormField>
-        <UFormField label="Username">
-          <UInput v-model="form.username" placeholder="juandc" class="w-full" />
+        <UFormField label="Username" name="username">
+          <UInput v-model="state.username" placeholder="e.g. juandc" class="w-full" />
         </UFormField>
-        <UFormField label="Email">
-          <UInput v-model="form.email" type="email" placeholder="juan@email.com" class="w-full" />
+        <UFormField label="Email" name="email">
+          <UInput
+            v-model="state.email"
+            type="email"
+            placeholder="e.g. juan@email.com"
+            class="w-full"
+          />
         </UFormField>
-        <UFormField label="Contact Number">
-          <UInput v-model="form.contactNumber" placeholder="+63 912 345 6789" class="w-full" />
+        <UFormField label="Contact Number" name="contactNumber">
+          <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
         </UFormField>
-        <UFormField label="Password">
-          <UInput v-model="form.password" type="password" class="w-full" />
+        <UFormField label="Password" name="password">
+          <UInput
+            v-model="state.password"
+            type="password"
+            placeholder="Min. 8 characters"
+            class="w-full"
+          />
         </UFormField>
-        <UFormField label="Role">
+        <UFormField label="Role" name="role">
           <USelect
-            v-model="form.role"
+            v-model="state.role"
             :items="ROLE_INPUT_OPTIONS"
             value-key="value"
             class="w-full"
           />
         </UFormField>
-      </div>
-    </template>
-    <template #footer>
-      <div class="w-full flex justify-end gap-2">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          :disabled="isLoading"
-          class="cursor-pointer"
-          @click="open = false"
-        >
-          Cancel
-        </UButton>
-        <UButton color="primary" :loading="isLoading" class="cursor-pointer" @click="create()">
-          Create
-        </UButton>
-      </div>
+        <ApiErrorAlert :messages="errorMessage" />
+        <div class="flex justify-end gap-2">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :disabled="isLoading"
+            class="cursor-pointer"
+            @click="open = false"
+          >
+            Cancel
+          </UButton>
+          <UButton
+            type="submit"
+            color="primary"
+            :loading="isLoading"
+            :disabled="hasErrors"
+            :class="hasErrors ? 'cursor-not-allowed' : 'cursor-pointer'"
+          >
+            Create
+          </UButton>
+        </div>
+      </UForm>
     </template>
   </UModal>
 </template>

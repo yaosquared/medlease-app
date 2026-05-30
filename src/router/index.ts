@@ -12,6 +12,8 @@ import Profile from '@/views/Profile.vue'
 import Users from '@/views/Users.vue'
 import UserDetail from '@/components/users/UserDetail.vue'
 import EquipmentDetails from '@/components/equipments/EquipmentDetails.vue'
+import ContractDetails from '@/components/contracts/ContractDetails.vue'
+import ContractHistory from '@/components/contracts/ContractHistory.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -129,13 +131,45 @@ const router = createRouter({
     },
     {
       path: '/contracts',
-      component: Contracts,
       meta: {
         title: 'Contracts',
         requiresAuth: true,
         layout: 'app',
         roles: ['OrgAdmin', 'Staff'],
       },
+      children: [
+        {
+          path: '',
+          component: Contracts,
+          meta: { roles: ['OrgAdmin', 'Staff'] },
+        },
+        {
+          path: ':contractId',
+          meta: {
+            title: 'Contract Details',
+            requiresAuth: true,
+            layout: 'app',
+            roles: ['OrgAdmin', 'Staff'],
+          },
+          children: [
+            {
+              path: '',
+              component: ContractDetails,
+              meta: { roles: ['OrgAdmin', 'Staff'] },
+            },
+            {
+              path: 'history',
+              component: ContractHistory,
+              meta: {
+                title: 'Contract History',
+                requiresAuth: true,
+                layout: 'app',
+                roles: ['OrgAdmin', 'Staff'],
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       path: '/payments',

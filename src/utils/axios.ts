@@ -11,11 +11,6 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${accessToken}`
   }
   return config
-  //   const token = localStorage.getItem('accessToken')
-  //   if (token) {
-  //     config.headers.Authorization = `Bearer ${token}`
-  //   }
-  //   return config
 })
 
 export default api

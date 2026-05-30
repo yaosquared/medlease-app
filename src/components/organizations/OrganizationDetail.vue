@@ -1,70 +1,26 @@
 <script setup lang="ts">
-import { computed, ref, reactive, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
+import { useQuery } from '@pinia/colada'
 
-import {
-  getOrganizationById,
-  getOwnOrganization,
-  updateOwnOrganization,
-} from '@/apis/organizations'
+import { getOrganizationById, getOwnOrganization } from '@/apis/organizations'
 import { useAuthStore } from '@/stores/auth.ts'
-import type { TApiErrorResponse } from '@/types/api'
-import type { AxiosError } from 'axios'
 import OrganizationActions from './OrganizationActions.vue'
 import EditOrganizationModal from './EditOrganizationModal.vue'
 
-const { user } = storeToRefs(useAuthStore())
+const { isSuperAdmin, isOrgAdmin } = storeToRefs(useAuthStore())
 const route = useRoute()
-const toast = useToast()
-const queryCache = useQueryCache()
 
 const showEditOrgModal = ref(false)
-const form = reactive({
-  name: '',
-  address: '',
-  contactNumber: '',
-  email: '',
-})
-
-const isOrgAdmin = computed(() => user.value?.role === 'OrgAdmin')
 const orgId = route.params.orgId as string
 
 const { data, asyncStatus } = useQuery({
-  key: () => (isOrgAdmin.value ? ['organization', 'me'] : ['organization', orgId]),
-  query: () => (isOrgAdmin.value ? getOwnOrganization() : getOrganizationById(orgId)),
-})
-
-const { mutate: save, isLoading: isSaving } = useMutation({
-  mutation: (payload: typeof form) => updateOwnOrganization(payload),
-  onSuccess: () => {
-    showEditOrgModal.value = false
-    toast.add({ title: 'Organization updated', color: 'success' })
-  },
-  onError: (err: AxiosError<TApiErrorResponse>) => {
-    toast.add({
-      title: 'Update failed',
-      description: err?.response?.data?.message ?? 'Something went wrong.',
-      color: 'error',
-    })
-  },
-  onSettled: () => queryCache.invalidateQueries({ key: ['organization', 'me'] }),
+  key: () => (isSuperAdmin.value ? ['organization', orgId] : ['organization', 'me']),
+  query: () => (isSuperAdmin.value ? getOrganizationById(orgId) : getOwnOrganization()),
 })
 
 const org = computed(() => data.value?.data)
-
-watch(
-  () => [org.value, showEditOrgModal.value],
-  () => {
-    if (showEditOrgModal.value && org.value) {
-      form.name = org.value.name ?? ''
-      form.address = org.value.address ?? ''
-      form.contactNumber = org.value.contactNumber ?? ''
-      form.email = org.value.email ?? ''
-    }
-  },
-)
 
 const statusBadge = computed(() => {
   switch (org.value?.status) {
@@ -135,12 +91,12 @@ const typeBadge = computed(() => {
       </div>
     </div>
     <template #footer>
-      <OrganizationActions v-if="!isOrgAdmin && org.status === 0" :id="org.id" />
+      <!-- NOTE: show actions only if the user is a SuperAdmin and the org is still pending review -->
+      <OrganizationActions v-if="isSuperAdmin && org.status === 0" :id="org.id" />
       <div v-else-if="isOrgAdmin" class="flex justify-end">
         <UButton
           size="sm"
           color="neutral"
-          variant="outline"
           icon="i-lucide-pencil"
           class="cursor-pointer"
           @click="showEditOrgModal = true"
@@ -150,11 +106,5 @@ const typeBadge = computed(() => {
       </div>
     </template>
   </UCard>
-  <EditOrganizationModal
-    v-if="isOrgAdmin"
-    v-model:open="showEditOrgModal"
-    :organization="org"
-    :loading="isSaving"
-    @save="save"
-  />
+  <EditOrganizationModal v-if="isOrgAdmin" v-model:open="showEditOrgModal" :organization="org" />
 </template>

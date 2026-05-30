@@ -8,15 +8,14 @@ import { getOwnOrgUserById, getUserById } from '@/apis/users'
 import UserActions from './UserActions.vue'
 import { useAuthStore } from '@/stores/auth.ts'
 
-const { user } = storeToRefs(useAuthStore())
+const { isSuperAdmin } = storeToRefs(useAuthStore())
 const route = useRoute()
 
-const isOrgAdmin = computed(() => user.value?.role === 'OrgAdmin')
 const userId = route.params.orgId as string
 
 const { data, asyncStatus } = useQuery({
-  key: () => [!isOrgAdmin.value ? 'super-admin' : 'admin', 'user', userId],
-  query: () => (!isOrgAdmin.value ? getUserById(userId) : getOwnOrgUserById(userId)),
+  key: () => [isSuperAdmin.value ? 'super-admin' : 'admin', 'user', userId],
+  query: () => (isSuperAdmin.value ? getUserById(userId) : getOwnOrgUserById(userId)),
 })
 
 const org = computed(() => data.value?.data)

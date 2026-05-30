@@ -23,16 +23,6 @@ export const getOrganizationById = async (orgId: string) => {
   return res.data
 }
 
-export const getOwnOrganization = async () => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`)
-  return res.data
-}
-
-export const updateOwnOrganization = async (payload: UpdateOwnOrganizationRequest) => {
-  const res = await api.put(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`, payload)
-  return res.data
-}
-
 export const approveOrganization = async (orgId: string) => {
   const res = await api.patch(
     `${import.meta.env.VITE_API_URL}/api/super-admin/organizations/${orgId}/approve`,
@@ -44,5 +34,15 @@ export const rejectOrganization = async (orgId: string) => {
   const res = await api.patch(
     `${import.meta.env.VITE_API_URL}/api/super-admin/organizations/${orgId}/reject`,
   )
+  return res.data
+}
+
+export const getOwnOrganization = async () => {
+  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`)
+  return res.data
+}
+
+export const updateOwnOrganization = async (payload: UpdateOwnOrganizationRequest) => {
+  const res = await api.put(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`, payload)
   return res.data
 }

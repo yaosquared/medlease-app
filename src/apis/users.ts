@@ -15,6 +15,18 @@ export const getUsers = async ({
   return res.data
 }
 
+export const getUserById = async (userId: string) => {
+  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/super-admin/users/${userId}`)
+  return res.data
+}
+
+export const deactivateUser = async (orgId: string) => {
+  const res = await api.patch(
+    `${import.meta.env.VITE_API_URL}/api/super-admin/users/${orgId}/deactivate`,
+  )
+  return res.data
+}
+
 export const getOwnUsers = async ({
   pageParam = 1,
   limit = 10,
@@ -30,23 +42,6 @@ export const getOwnUsers = async ({
   return res.data
 }
 
-export const getUserById = async (userId: string) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/super-admin/users/${userId}`)
-  return res.data
-}
-
-export const getOwnOrgUserById = async (userId: string) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`)
-  return res.data
-}
-
-export const deactivateUser = async (orgId: string) => {
-  const res = await api.patch(
-    `${import.meta.env.VITE_API_URL}/api/super-admin/users/${orgId}/deactivate`,
-  )
-  return res.data
-}
-
 export const createOwnOrgUser = async (payload: {
   fullName: string
   username: string
@@ -59,14 +54,16 @@ export const createOwnOrgUser = async (payload: {
   return res.data
 }
 
+export const getOwnOrgUserById = async (userId: string) => {
+  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`)
+  return res.data
+}
+
 export const updateOwnOrgUser = async (
   userId: string,
   payload: { contactNumber: string; role: number },
 ) => {
-  const res = await api.put(
-    `${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`,
-    payload,
-  )
+  const res = await api.put(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`, payload)
   return res.data
 }
 

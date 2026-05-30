@@ -5,8 +5,8 @@ import { useQuery } from '@pinia/colada'
 
 import { getAdminDashboardStats } from '@/apis/dashboard'
 import { getOwnUsers } from '@/apis/users'
-import { getContracts } from '@/apis/contract'
-import { getPayments } from '@/apis/payment'
+import { getContracts } from '@/apis/contracts'
+import { getPayments } from '@/apis/payments'
 
 const router = useRouter()
 
@@ -51,11 +51,11 @@ const getContractStatusBadge = (status: number) => {
     case 0:
       return { label: 'Pending', color: 'warning' as const }
     case 1:
-      return { label: 'Approved', color: 'success' as const }
+      return { label: 'Active', color: 'info' as const }
     case 2:
-      return { label: 'Cancelled', color: 'error' as const }
+      return { label: 'Completed', color: 'success' as const }
     case 3:
-      return { label: 'Completed', color: 'neutral' as const }
+      return { label: 'Cancelled', color: 'error' as const }
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }
@@ -65,16 +65,12 @@ const getPaymentStatusBadge = (status: number) => {
   switch (status) {
     case 0:
       return { label: 'Pending', color: 'warning' as const }
-
     case 1:
       return { label: 'Processing', color: 'info' as const }
-
     case 2:
       return { label: 'Paid', color: 'success' as const }
-
     case 3:
       return { label: 'Overdue', color: 'error' as const }
-
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }
@@ -132,7 +128,7 @@ const stats = computed(() => [
         </UCard>
       </template>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
       <UCard>
         <template #header>
           <div class="flex items-center justify-between">

@@ -34,6 +34,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   })
 
+  const isSuperAdmin = computed(() => user.value?.role === 'SuperAdmin')
+  const isOrgAdmin = computed(() => user.value?.role === 'OrgAdmin')
+  const isStaff = computed(() => user.value?.role === 'Staff')
+  const isViewer = computed(() => user.value?.role === 'Viewer')
+
+  const isClinic = computed(() => user.value?.orgType === 'Clinic')
+  const isVendor = computed(() => user.value?.orgType === 'Vendor')
+
   const setTokens = (access: string, refresh: string) => {
     accessToken.value = access
     refreshToken.value = refresh
@@ -48,5 +56,18 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('refreshToken')
   }
 
-  return { accessToken, refreshToken, user, isAuthenticated, setTokens, clearTokens }
+  return {
+    accessToken,
+    refreshToken,
+    user,
+    isAuthenticated,
+    isSuperAdmin,
+    isOrgAdmin,
+    isStaff,
+    isViewer,
+    isClinic,
+    isVendor,
+    setTokens,
+    clearTokens,
+  }
 })

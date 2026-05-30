@@ -9,6 +9,7 @@ import { registerSchema } from '@/schemas/auth'
 import type { TRegisterSchema } from '@/types/auth'
 import type { TApiErrorResponse } from '@/types/api'
 import { register } from '@/apis/auth'
+import { getApiErrorMessages } from '@/utils/errors'
 
 const toast = useToast()
 const router = useRouter()
@@ -52,18 +53,7 @@ const onSubmit = (payload: FormSubmitEvent<TRegisterSchema>) => {
   mutate(payload.data)
 }
 
-const errorMessage = computed(() => {
-  if (!error.value) return null
-  const err = error.value as AxiosError<TApiErrorResponse>
-  const data = err?.response?.data
-  if (!data) return ['Something went wrong.']
-
-  if (data.errors?.length) {
-    return data.errors.flatMap((e) => e.messages)
-  }
-
-  return [data.message ?? 'Something went wrong.']
-})
+const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
 </script>
 
 <template>
@@ -75,7 +65,6 @@ const errorMessage = computed(() => {
         <p class="text-sm text-muted">Register your organization to get started.</p>
       </div>
     </div>
-
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 flex flex-col gap-4">
         <UFormField label="Full Name" name="fullName">
@@ -85,14 +74,12 @@ const errorMessage = computed(() => {
           <UInput v-model="state.username" placeholder="e.g. juan_dc" class="w-full" />
         </UFormField>
       </div>
-
       <UFormField label="Email" name="email">
         <UInput v-model="state.email" type="email" placeholder="juan@example.com" class="w-full" />
       </UFormField>
       <UFormField label="Contact Number" name="contactNumber">
         <UInput v-model="state.contactNumber" placeholder="09XXXXXXXXX" class="w-full" />
       </UFormField>
-
       <UFormField label="Password" name="password">
         <UInput
           v-model="state.password"
@@ -129,7 +116,6 @@ const errorMessage = computed(() => {
           </template>
         </UInput>
       </UFormField>
-
       <UFormField label="Organization Name" name="orgName">
         <UInput v-model="state.orgName" placeholder="e.g. St. Luke's" class="w-full" />
       </UFormField>
@@ -141,7 +127,6 @@ const errorMessage = computed(() => {
           class="w-full"
         />
       </UFormField>
-
       <UFormField label="Organization Email" name="orgEmail">
         <UInput
           v-model="state.orgEmail"
@@ -158,15 +143,11 @@ const errorMessage = computed(() => {
         <UInput v-model="state.address" placeholder="Street, City, Province" class="w-full" />
       </UFormField>
     </div>
-
+    <ApiErrorAlert :messages="errorMessage" />
     <div class="mt-6">
       <UButton type="submit" block>{{
         isLoading ? 'Creating account...' : 'Create Account'
       }}</UButton>
     </div>
-
-    <ul v-if="errorMessage" class="text-sm text-center text-red-500 list-inside pt-4">
-      <li v-for="(msg, i) in errorMessage" :key="i">{{ msg }}</li>
-    </ul>
   </UForm>
 </template>
