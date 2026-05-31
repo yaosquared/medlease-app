@@ -1,4 +1,4 @@
-import type { UpdateOwnOrganizationRequest } from '@/types/organization'
+import type { TUpdateOwnOrganizationRequest } from '@/types/organization'
 import api from '@/utils/axios'
 
 export const getOrganizations = async ({
@@ -42,7 +42,7 @@ export const getOwnOrganization = async () => {
   return res.data
 }
 
-export const updateOwnOrganization = async (payload: UpdateOwnOrganizationRequest) => {
+export const updateOwnOrganization = async (payload: TUpdateOwnOrganizationRequest) => {
   const res = await api.put(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`, payload)
   return res.data
 }

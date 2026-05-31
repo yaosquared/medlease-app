@@ -1,24 +1,48 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useQuery } from '@pinia/colada'
+import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
+import type { AxiosError } from 'axios'
 
-import { getEquipmentById } from '@/apis/equipments'
+import { deleteEquipment, getEquipmentById } from '@/apis/equipments'
 import { useAuthStore } from '@/stores/auth.ts'
 import { CONDITION_MAP, STATUS_MAP } from '@/constants/equipments'
+import type { TApiErrorResponse } from '@/types/api.ts'
 import EditEquipmentModal from './EditEquipmentModal.vue'
+import { formatDate, formatRate } from '@/utils/format.ts'
 
 const { isOrgAdmin, isStaff, isVendor, isClinic } = storeToRefs(useAuthStore())
 const route = useRoute()
+const router = useRouter()
+const toast = useToast()
+const queryCache = useQueryCache()
 
 const showEditEquipmentModal = ref(false)
 const showLeaseContractModal = ref(false)
+const showDeleteConfirmationtModal = ref(false)
 const equipmentId = route.params.equipmentId as string
 
 const { data, asyncStatus } = useQuery({
   key: () => ['equipment', equipmentId],
   query: () => getEquipmentById(equipmentId),
+})
+
+const { mutate, isLoading: isDeleting } = useMutation({
+  mutation: () => deleteEquipment(equipmentId),
+  onSuccess: () => {
+    showDeleteConfirmationtModal.value = false
+    toast.add({ title: 'Equipment updated', color: 'success' })
+    router.push('/equipments')
+  },
+  onError: (err: AxiosError<TApiErrorResponse>) => {
+    toast.add({
+      title: 'Update failed',
+      description: err?.response?.data?.message ?? 'Something went wrong.',
+      color: 'error',
+    })
+  },
+  onSettled: () => queryCache.invalidateQueries({ key: ['equipment', equipmentId] }),
 })
 
 const equipment = computed(() => data.value?.data)
@@ -36,11 +60,9 @@ const statusBadge = computed(
     STATUS_MAP[equipment.value?.status ?? -1] ?? { label: 'Unknown', color: 'neutral' as const },
 )
 
-const formatRate = (rate: number) =>
-  new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(rate)
-
-const formatDate = (date: string | null) =>
-  date ? new Date(date).toLocaleDateString('en-PH', { dateStyle: 'medium' }) : '—'
+const onDelete = () => {
+  mutate()
+}
 </script>
 
 <template>
@@ -114,12 +136,22 @@ const formatDate = (date: string | null) =>
         >
           Edit
         </UButton>
+        <!-- NOTE: show button only if the user is an OrgAdmin, from Vendor org, and equipment status is retired -->
+        <UButton
+          v-if="isVendor && equipment?.status === 4"
+          size="sm"
+          color="error"
+          icon="i-lucide-trash"
+          class="cursor-pointer"
+          @click="showDeleteConfirmationtModal = true"
+        >
+          Delete
+        </UButton>
         <!-- NOTE: show button only if the user is an OrgAdmin or Staff, from Vendor org, and equipment status is available -->
         <UButton
           v-if="isClinic && (isOrgAdmin || isStaff) && equipment?.status === 0"
           size="sm"
           color="primary"
-          variant="outline"
           icon="i-lucide-file-text"
           class="cursor-pointer"
           @click="showLeaseContractModal = true"
@@ -134,6 +166,15 @@ const formatDate = (date: string | null) =>
     v-model:open="showEditEquipmentModal"
     :equipment="equipment"
     :equipment-id="equipmentId"
+  />
+  <ConfirmationModal
+    v-model:open="showDeleteConfirmationtModal"
+    title="Delete Equipment"
+    message="Are you sure you want to delete this equipment? This action cannot be undone."
+    confirm-text="Delete"
+    confirm-color="error"
+    :loading="isDeleting"
+    @confirm="onDelete"
   />
   <CreateContractModal
     v-if="isClinic && (isOrgAdmin || isStaff) && equipment?.status === 0"

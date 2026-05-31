@@ -11,21 +11,17 @@ import avatar from '@/assets/avatar.png'
 
 const router = useRouter()
 const route = useRoute()
-
-const authStore = useAuthStore()
-const { user } = storeToRefs(authStore)
-const { clearTokens } = authStore
-
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
-const { clearProfile } = profileStore
+const { clearTokens } = useAuthStore()
+const { clearProfile, fetchProfile } = useProfileStore()
+const { user } = storeToRefs(useAuthStore())
+const { profile } = storeToRefs(useProfileStore())
 
 const colorMode = useColorMode()
 const open = ref(true)
 
 onMounted(async () => {
   if (user.value) {
-    await profileStore.fetchProfile()
+    await fetchProfile()
   }
 })
 
@@ -47,6 +43,7 @@ const navItems = computed<NavigationMenuItem[]>(() => {
       { label: 'Payments', icon: 'i-lucide-credit-card', to: '/payments' },
     ],
     Staff: [
+      { label: 'Equipments', icon: 'i-lucide-monitor', to: '/equipments' },
       { label: 'Contracts', icon: 'i-lucide-file-text', to: '/contracts' },
       { label: 'Payments', icon: 'i-lucide-credit-card', to: '/payments' },
     ],

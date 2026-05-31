@@ -27,7 +27,7 @@ const { data: contractsData, asyncStatus: contractsStatus } = useQuery({
 
 const { data: paymentsData, asyncStatus: paymentsStatus } = useQuery({
   key: () => ['payments', 1],
-  query: () => getPayments({ pageParam: 1, limit: 2 }),
+  query: () => getPayments({ pageParam: 1, limit: 3 }),
 })
 
 const recentUsers = computed(() => usersData.value?.data ?? [])

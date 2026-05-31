@@ -1,10 +1,17 @@
 import api from '@/utils/axios'
+import type { TChangePasswordSchema, TEditProfileSchema } from '@/schemas/profile'
 
 export const getProfile = async () => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/profile`)
+  const res = await api.get(`/api/profile`)
   return res.data
 }
 
-// TODO: PUT put/api/profile
+export const updateProfile = async (payload: TEditProfileSchema) => {
+  const res = await api.put(`/profile`, payload)
+  return res.data
+}
 
-// TODO: PATCH patch/api/profile/change-password
+export const changePassword = async (payload: TChangePasswordSchema) => {
+  const res = await api.patch(`/profile/change-password`)
+  return res.data
+}

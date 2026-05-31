@@ -10,7 +10,7 @@ export type TOrganization = {
   email?: string
 }
 
-export interface UpdateOwnOrganizationRequest {
+export type TUpdateOwnOrganizationRequest = {
   name: string
   address: string
   contactNumber: string

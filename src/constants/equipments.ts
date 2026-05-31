@@ -10,7 +10,7 @@ export const STATUS_OPTIONS = [
 ]
 
 export const CONDITION_MAP = [
-  { label: 'New', color: 'success' },
+  { label: 'New', color: 'info' },
   { label: 'Good', color: 'success' },
   { label: 'Fair', color: 'warning' },
   { label: 'Poor', color: 'error' },
@@ -33,7 +33,6 @@ export const CONDITION_INPUT_OPTIONS = [
 
 export const STATUS_INPUT_OPTIONS = [
   { label: 'Available', value: 0 },
-  { label: 'Under Review', value: 1 },
   { label: 'Leased', value: 2 },
   { label: 'Under Maintenance', value: 3 },
   { label: 'Retired', value: 4 },

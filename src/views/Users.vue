@@ -110,7 +110,6 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
 
 <template>
   <div class="h-full flex flex-col gap-4">
-    <CreateUserModal v-if="isOrgAdmin" v-model:open="showCreateUserModal" />
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load users
     </div>
@@ -144,5 +143,6 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
         <Pagination v-model:page="page" :total="total" :items-per-page="USERS_PER_PAGE" />
       </div>
     </div>
+    <CreateUserModal v-if="isOrgAdmin" v-model:open="showCreateUserModal" />
   </div>
 </template>

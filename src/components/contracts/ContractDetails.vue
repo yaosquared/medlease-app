@@ -11,11 +11,16 @@ import {
   getContractById,
 } from '@/apis/contracts'
 import { useAuthStore } from '@/stores/auth'
+import { formatCurrency, formatDate } from '@/utils/format'
 
 const route = useRoute()
 const router = useRouter()
 const { isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
+
 const contractId = route.params.contractId as string
+const showApproveConfirmationModal = ref(false)
+const showCancelConfirmationModal = ref(false)
+const showCompleteConfirmationModal = ref(false)
 
 const { data, asyncStatus, refresh } = useQuery({
   key: () => ['contract', contractId],
@@ -27,7 +32,7 @@ const contract = computed(() => data.value?.data)
 const { mutate: approve, asyncStatus: approveStatus } = useMutation({
   mutation: () => approveContract(contractId),
   onSuccess: () => {
-    approveOpen.value = false
+    showApproveConfirmationModal.value = false
     refresh()
   },
 })
@@ -35,7 +40,7 @@ const { mutate: approve, asyncStatus: approveStatus } = useMutation({
 const { mutate: cancel, asyncStatus: cancelStatus } = useMutation({
   mutation: () => cancelContract(contractId),
   onSuccess: () => {
-    cancelOpen.value = false
+    showCancelConfirmationModal.value = false
     refresh()
   },
 })
@@ -43,14 +48,10 @@ const { mutate: cancel, asyncStatus: cancelStatus } = useMutation({
 const { mutate: complete, asyncStatus: completeStatus } = useMutation({
   mutation: () => completeContract(contractId),
   onSuccess: () => {
-    completeOpen.value = false
+    showCompleteConfirmationModal.value = false
     refresh()
   },
 })
-
-const approveOpen = ref(false)
-const cancelOpen = ref(false)
-const completeOpen = ref(false)
 
 const statusBadge = computed(() => {
   switch (contract.value?.status) {
@@ -64,12 +65,6 @@ const statusBadge = computed(() => {
       return { label: 'Cancelled', color: 'error' as const }
   }
 })
-
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount)
-
-const formatDate = (date: string | null) =>
-  date ? new Date(date).toLocaleDateString('en-PH', { dateStyle: 'medium' }) : '—'
 
 const goToHistory = () => {
   router.push(`/contracts/${contractId}/history`)
@@ -179,7 +174,7 @@ const goToHistory = () => {
           color="success"
           icon="i-lucide-thumbs-up"
           class="cursor-pointer"
-          @click="approveOpen = true"
+          @click="showApproveConfirmationModal = true"
         >
           Approve
         </UButton>
@@ -190,7 +185,7 @@ const goToHistory = () => {
           color="error"
           icon="i-lucide-circle-x"
           class="cursor-pointer"
-          @click="cancelOpen = true"
+          @click="showCancelConfirmationModal = true"
         >
           Cancel
         </UButton>
@@ -201,7 +196,7 @@ const goToHistory = () => {
           color="success"
           icon="i-lucide-circle-check"
           class="cursor-pointer"
-          @click="completeOpen = true"
+          @click="showCompleteConfirmationModal = true"
         >
           Complete
         </UButton>
@@ -209,7 +204,8 @@ const goToHistory = () => {
     </template>
   </UCard>
   <ConfirmationModal
-    v-model:open="approveOpen"
+    v-if="isVendor && isOrgAdmin && contract.status === 0"
+    v-model:open="showApproveConfirmationModal"
     title="Approve Contract"
     message="Are you sure you want to approve this contract? This will mark it as active."
     confirm-text="Approve"
@@ -218,7 +214,8 @@ const goToHistory = () => {
     @confirm="approve()"
   />
   <ConfirmationModal
-    v-model:open="cancelOpen"
+    v-if="isOrgAdmin && contract.status === 1"
+    v-model:open="showCancelConfirmationModal"
     title="Cancel Contract"
     message="Are you sure you want to cancel this contract? This action cannot be undone."
     confirm-text="Cancel Contract"
@@ -227,7 +224,8 @@ const goToHistory = () => {
     @confirm="cancel()"
   />
   <ConfirmationModal
-    v-model:open="completeOpen"
+    v-if="isVendor && isOrgAdmin && contract.status === 1"
+    v-model:open="showCompleteConfirmationModal"
     title="Complete Contract"
     message="Are you sure you want to mark this contract as completed?"
     confirm-text="Complete"

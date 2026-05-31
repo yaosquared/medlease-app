@@ -2,10 +2,10 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { getProfile } from '@/apis/profile'
-import type { IProfileResponse } from '@/types/profile'
+import type { TProfileResponse } from '@/types/profile'
 
 export const useProfileStore = defineStore('profile', () => {
-  const profile = ref<IProfileResponse | null>(null)
+  const profile = ref<TProfileResponse | null>(null)
 
   const fetchProfile = async () => {
     const response = await getProfile()

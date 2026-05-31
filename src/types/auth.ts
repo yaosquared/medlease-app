@@ -1,13 +1,13 @@
 import type { z } from 'zod'
 
 import type { loginSchema, registerSchema } from '@/schemas/auth'
-import type { tabMap } from '@/constants/auth'
+import type { TAB_MAP } from '@/constants/auth'
 
 export type TLoginSchema = z.output<typeof loginSchema>
 export type TRegisterSchema = z.output<typeof registerSchema>
-export type TTabSlug = (typeof tabMap)[number]
+export type TTabSlug = (typeof TAB_MAP)[number]
 
-export interface IJwtPayload {
+export type IJwtPayload = {
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string
   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': string

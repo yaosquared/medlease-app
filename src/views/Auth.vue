@@ -3,21 +3,21 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import RegisterForm from '@/components/auth/RegisterForm.vue'
-import { tabMap, tabNav } from '@/constants/auth'
+import { TAB_MAP, TAB_NAV } from '@/constants/auth'
 import type { TTabSlug } from '@/types/auth'
 
 const route = useRoute()
 const router = useRouter()
 
 const selectedTab = ref<TTabSlug>(
-  tabMap.includes(route.path.slice(1) as TTabSlug) ? (route.path.slice(1) as TTabSlug) : 'login',
+  TAB_MAP.includes(route.path.slice(1) as TTabSlug) ? (route.path.slice(1) as TTabSlug) : 'login',
 )
 
 watch(
   () => route.path,
   (path) => {
     const slug = path.slice(1) as TTabSlug
-    if (tabMap.includes(slug)) selectedTab.value = slug
+    if (TAB_MAP.includes(slug)) selectedTab.value = slug
   },
   { immediate: true },
 )
@@ -30,9 +30,9 @@ watch(selectedTab, (slug) => {
 <template>
   <div class="flex flex-col items-center justify-center gap-4 p-4">
     <UPageCard class="min-w-sm lg:min-w-md max-w-md">
-      <UTabs :items="tabNav" v-model="selectedTab">
+      <UTabs :items="TAB_NAV" v-model="selectedTab">
         <template #content>
-          <div class="mt-6">
+          <div class="mt-10">
             <LoginForm v-if="selectedTab === 'login'" />
             <RegisterForm v-else-if="selectedTab === 'register'" />
           </div>

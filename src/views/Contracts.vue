@@ -4,10 +4,10 @@ import { useRouter } from 'vue-router'
 import { useQuery } from '@pinia/colada'
 import type { TableColumn, TableRow } from '@nuxt/ui'
 
-import { USERS_PER_PAGE } from '@/constants/users'
-import type { TUser } from '@/types/users'
 import { getContracts } from '@/apis/contracts'
 import { CONTRACTS_PER_PAGE, STATUS_OPTIONS } from '@/constants/contracts'
+import type { TContract } from '@/types/contract'
+import { formatDate, formatRate } from '@/utils/format'
 
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
@@ -28,10 +28,10 @@ const { data, asyncStatus, error } = useQuery({
 const rows = computed(() => data.value?.data ?? [])
 const total = computed(() => data.value?.totalCount ?? 0)
 
-const usersColumns: TableColumn<TUser>[] = [
+const usersColumns: TableColumn<TContract>[] = [
   {
     accessorKey: 'contractNumber',
-    header: 'Contract Number',
+    header: 'Reference',
     cell: ({ row }) => {
       const value = row.getValue('contractNumber') as string
       return value?.length > 20 ? `${value.slice(0, 20)}...` : value
@@ -48,12 +48,12 @@ const usersColumns: TableColumn<TUser>[] = [
   {
     accessorKey: 'startDate',
     header: 'Start Date',
-    cell: ({ row }) => row.getValue('startDate'),
+    cell: ({ row }) => formatDate(row.getValue('startDate')),
   },
   {
     accessorKey: 'endDate',
     header: 'End Date',
-    cell: ({ row }) => row.getValue('endDate'),
+    cell: ({ row }) => formatDate(row.getValue('endDate')),
   },
   {
     accessorKey: 'monthlyPayment',
@@ -77,12 +77,9 @@ const getStatusBadge = (status: number) => {
   }
 }
 
-const goToDetails = (_e: Event, row: TableRow<TUser>) => {
+const goToDetails = (_e: Event, row: TableRow<TContract>) => {
   router.push(`/contracts/${row.original.id}`)
 }
-
-const formatRate = (rate: number) =>
-  new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(rate)
 
 const onStatusChange = (value: number | null) => {
   statusFilter.value = value
@@ -114,7 +111,7 @@ const onStatusChange = (value: number | null) => {
           class="flex-1 cursor-pointer"
           @select="goToDetails"
         />
-        <Pagination v-model:page="page" :total="total" :items-per-page="USERS_PER_PAGE" />
+        <Pagination v-model:page="page" :total="total" :items-per-page="CONTRACTS_PER_PAGE" />
       </div>
     </div>
   </div>

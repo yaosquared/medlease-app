@@ -12,6 +12,7 @@ import {
   STATUS_OPTIONS,
 } from '@/constants/equipments'
 import { useAuthStore } from '@/stores/auth'
+import { formatRate } from '@/utils/format'
 
 const { isOrgAdmin, isStaff, isVendor } = storeToRefs(useAuthStore())
 const router = useRouter()
@@ -37,9 +38,6 @@ const onStatusChange = (value: number | null) => {
   statusFilter.value = value === null ? null : Number(value)
   page.value = 1
 }
-
-const formatRate = (rate: number) =>
-  new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(rate)
 </script>
 
 <template>

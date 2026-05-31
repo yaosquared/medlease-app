@@ -34,6 +34,9 @@ export const updateEquipment = async (equipmentId: string, payload: TEquipmentPa
   return res.data
 }
 
-// TODO: DEL delete/api/admin/equipments/{equipId}
-
-// TODO: PATCH patch/api/admin/equipments/{equipId}/status
+export const deleteEquipment = async (equipmentId: string) => {
+  const res = await api.delete(
+    `${import.meta.env.VITE_API_URL}/api/admin/equipments/${equipmentId}`,
+  )
+  return res.data
+}

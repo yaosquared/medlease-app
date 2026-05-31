@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMutation, useQueryCache } from '@pinia/colada'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
@@ -17,6 +18,7 @@ const props = defineProps<{
 const open = defineModel<boolean>('open')
 
 const toast = useToast()
+const router = useRouter()
 const queryCache = useQueryCache()
 
 const state = reactive({
@@ -31,6 +33,7 @@ const { mutate, asyncStatus, error } = useMutation({
   onSuccess: () => {
     open.value = false
     toast.add({ title: 'Contract created successfully', color: 'success' })
+    router.push('/contracts')
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({

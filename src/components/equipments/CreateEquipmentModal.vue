@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMutation, useQueryCache } from '@pinia/colada'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
 
 import { createEquipment } from '@/apis/equipments'
-import { CONDITION_INPUT_OPTIONS, STATUS_INPUT_OPTIONS } from '@/constants/equipments'
+import { CONDITION_INPUT_OPTIONS } from '@/constants/equipments'
 import { createEquipmentSchema } from '@/schemas/equipment'
 import type { TCreateEquipmentSchema } from '@/schemas/equipment'
 import type { TApiErrorResponse } from '@/types/api'
@@ -14,6 +15,7 @@ import { getApiErrorMessages } from '@/utils/errors'
 const open = defineModel<boolean>('open')
 
 const toast = useToast()
+const router = useRouter()
 const queryCache = useQueryCache()
 
 const state = reactive({
@@ -33,6 +35,7 @@ const { mutate, asyncStatus, error } = useMutation({
   onSuccess: () => {
     open.value = false
     toast.add({ title: 'Equipment created successfully', color: 'success' })
+    router.push('/equipments')
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({
@@ -83,22 +86,14 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         <UFormField label="Serial Number" name="serialNumber">
           <UInput v-model="state.serialNumber" placeholder="SN-2024-001" class="w-full" />
         </UFormField>
-        <UFormField label="Monthly Rate (PHP)" name="monthlyRate">
-          <UInput v-model.number="state.monthlyRate" type="number" min="0" class="w-full" />
-        </UFormField>
         <div class="grid grid-cols-2 gap-4">
+          <UFormField label="Monthly Rate (PHP)" name="monthlyRate">
+            <UInput v-model.number="state.monthlyRate" type="number" min="0" class="w-full" />
+          </UFormField>
           <UFormField label="Condition" name="condition">
             <USelect
               v-model="state.condition"
               :items="CONDITION_INPUT_OPTIONS"
-              value-key="value"
-              class="w-full"
-            />
-          </UFormField>
-          <UFormField label="Status" name="status">
-            <USelect
-              v-model="state.status"
-              :items="STATUS_INPUT_OPTIONS"
               value-key="value"
               class="w-full"
             />

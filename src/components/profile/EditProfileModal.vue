@@ -1,64 +1,66 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useMutation, useQueryCache } from '@pinia/colada'
+import { storeToRefs } from 'pinia'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
 
-import { createOwnOrgUser } from '@/apis/users'
-import { ROLE_INPUT_OPTIONS } from '@/constants/users'
-import { createUserSchema } from '@/schemas/user'
-import type { TCreateUserSchema } from '@/schemas/user'
-import type { TApiErrorResponse } from '@/types/api'
+import { updateProfile } from '@/apis/profile'
+import { useProfileStore } from '@/stores/profile'
 import { getApiErrorMessages } from '@/utils/errors'
+import { editProfileSchema, type TEditProfileSchema } from '@/schemas/profile'
+import type { TApiErrorResponse } from '@/types/api'
 
 const open = defineModel<boolean>('open')
 
 const toast = useToast()
 const queryCache = useQueryCache()
+const { profile } = storeToRefs(useProfileStore())
 
-const state = reactive({
+const state = reactive<TEditProfileSchema>({
   fullName: '',
   username: '',
-  email: '',
   contactNumber: '',
-  password: '',
-  role: 2,
 })
 
-const {
-  mutate: create,
-  asyncStatus,
-  error,
-} = useMutation({
-  mutation: (payload: TCreateUserSchema) => createOwnOrgUser(payload),
+watch(open, (val) => {
+  if (val && profile.value) {
+    state.fullName = profile.value.fullName
+    state.username = profile.value.username
+    state.contactNumber = profile.value.contactNumber
+  }
+})
+
+const { mutate, asyncStatus, error } = useMutation({
+  mutation: (payload: TEditProfileSchema) => updateProfile(payload),
   onSuccess: () => {
     open.value = false
-    toast.add({ title: 'User created successfully', color: 'success' })
+    toast.add({ title: 'Profile updated successfully', color: 'success' })
+    queryCache.invalidateQueries({ key: ['profile'] })
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({
-      title: 'Failed to create user',
+      title: 'Failed to update profile',
       description: err?.response?.data?.message ?? 'Something went wrong.',
       color: 'error',
     })
   },
-  onSettled: () => queryCache.invalidateQueries({ key: ['users'] }),
 })
 
-const onSubmit = (payload: FormSubmitEvent<TCreateUserSchema>) => {
-  create(payload.data)
+const onSubmit = (payload: FormSubmitEvent<TEditProfileSchema>) => {
+  mutate(payload.data)
 }
 
 const isLoading = computed(() => asyncStatus.value === 'loading')
-const hasErrors = computed(() => !createUserSchema.safeParse(state).success)
+const hasErrors = computed(() => !editProfileSchema.safeParse(state).success)
 const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
 </script>
 
 <template>
-  <UModal v-model:open="open" title="Add User">
+  <UModal v-model:open="open" title="Edit profile">
     <template #body>
       <UForm
-        :schema="createUserSchema"
+        :schema="editProfileSchema"
         :state="state"
         class="flex flex-col gap-4"
         @submit="onSubmit"
@@ -69,32 +71,8 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         <UFormField label="Username" name="username">
           <UInput v-model="state.username" placeholder="e.g. juandc" class="w-full" />
         </UFormField>
-        <UFormField label="Email" name="email">
-          <UInput
-            v-model="state.email"
-            type="email"
-            placeholder="e.g. juan@email.com"
-            class="w-full"
-          />
-        </UFormField>
         <UFormField label="Contact Number" name="contactNumber">
           <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
-        </UFormField>
-        <UFormField label="Password" name="password">
-          <UInput
-            v-model="state.password"
-            type="password"
-            placeholder="Min. 8 characters"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Role" name="role">
-          <USelect
-            v-model="state.role"
-            :items="ROLE_INPUT_OPTIONS"
-            value-key="value"
-            class="w-full"
-          />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />
         <div class="flex justify-end gap-2">
@@ -114,7 +92,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :disabled="hasErrors"
             :class="hasErrors ? 'cursor-not-allowed' : 'cursor-pointer'"
           >
-            Create
+            Save changes
           </UButton>
         </div>
       </UForm>
