@@ -10,46 +10,38 @@ export const getContracts = async ({
   limit?: number
   status?: number
 }) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/contracts`, {
+  const res = await api.get(`/api/admin/contracts`, {
     params: { page: pageParam, limit, status },
   })
   return res.data
 }
 
 export const createContract = async (payload: TContractPayload) => {
-  const res = await api.post(`${import.meta.env.VITE_API_URL}/api/admin/contracts`, payload)
+  const res = await api.post(`/api/admin/contracts`, payload)
   return res.data
 }
 
 export const getContractById = async (contractId: string) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/contracts/${contractId}`)
+  const res = await api.get(`/api/admin/contracts/${contractId}`)
   return res.data
 }
 
 export const getContractHistory = async (contractId: string) => {
-  const res = await api.get(
-    `${import.meta.env.VITE_API_URL}/api/admin/contracts/${contractId}/history`,
-  )
+  const res = await api.get(`/api/admin/contracts/${contractId}/history`)
   return res.data
 }
 
 export const approveContract = async (contractId: string) => {
-  const res = await api.patch(
-    `${import.meta.env.VITE_API_URL}/api/admin/contracts/${contractId}/approve`,
-  )
+  const res = await api.patch(`/api/admin/contracts/${contractId}/approve`)
   return res.data
 }
 
 export const cancelContract = async (contractId: string) => {
-  const res = await api.patch(
-    `${import.meta.env.VITE_API_URL}/api/admin/contracts/${contractId}/cancel`,
-  )
+  const res = await api.patch(`/api/admin/contracts/${contractId}/cancel`)
   return res.data
 }
 
 export const completeContract = async (contractId: string) => {
-  const res = await api.patch(
-    `${import.meta.env.VITE_API_URL}/api/admin/contracts/${contractId}/complete`,
-  )
+  const res = await api.patch(`/api/admin/contracts/${contractId}/complete`)
   return res.data
 }

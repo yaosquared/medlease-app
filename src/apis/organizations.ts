@@ -1,5 +1,5 @@
-import type { TUpdateOwnOrganizationRequest } from '@/types/organization'
 import api from '@/utils/axios'
+import type { TUpdateOwnOrganizationRequest } from '@/types/organization'
 
 export const getOrganizations = async ({
   pageParam = 1,
@@ -10,39 +10,33 @@ export const getOrganizations = async ({
   limit?: number
   status?: number
 }) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/super-admin/organizations`, {
+  const res = await api.get(`/api/super-admin/organizations`, {
     params: { page: pageParam, limit, status },
   })
   return res.data
 }
 
 export const getOrganizationById = async (orgId: string) => {
-  const res = await api.get(
-    `${import.meta.env.VITE_API_URL}/api/super-admin/organizations/${orgId}`,
-  )
+  const res = await api.get(`/api/super-admin/organizations/${orgId}`)
   return res.data
 }
 
 export const approveOrganization = async (orgId: string) => {
-  const res = await api.patch(
-    `${import.meta.env.VITE_API_URL}/api/super-admin/organizations/${orgId}/approve`,
-  )
+  const res = await api.patch(`/api/super-admin/organizations/${orgId}/approve`)
   return res.data
 }
 
 export const rejectOrganization = async (orgId: string) => {
-  const res = await api.patch(
-    `${import.meta.env.VITE_API_URL}/api/super-admin/organizations/${orgId}/reject`,
-  )
+  const res = await api.patch(`/api/super-admin/organizations/${orgId}/reject`)
   return res.data
 }
 
 export const getOwnOrganization = async () => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`)
+  const res = await api.get(`/api/admin/organizations/me`)
   return res.data
 }
 
 export const updateOwnOrganization = async (payload: TUpdateOwnOrganizationRequest) => {
-  const res = await api.put(`${import.meta.env.VITE_API_URL}/api/admin/organizations/me`, payload)
+  const res = await api.put(`/api/admin/organizations/me`, payload)
   return res.data
 }

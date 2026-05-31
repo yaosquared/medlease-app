@@ -1,23 +1,39 @@
-# .
+# MedLease Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+## Description
 
-## Recommended IDE Setup
+A web application for managing medical equipment leasing operations — handling lease contracts, equipment listings, payments, and multi-organization user management across vendor and clinic organizations.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Tech Stack
 
-## Recommended Browser Setup
+| Tool          | Version | Purpose                    |
+| ------------- | ------- | -------------------------- |
+| Vue 3         | ^3.5    | UI framework               |
+| Vite          | ^8.0    | Build tool & dev server    |
+| Vue Router    | ^5.0    | Client-side routing        |
+| Pinia         | ^3.0    | State management           |
+| @pinia/colada | ^1.3    | Async query/mutation layer |
+| @nuxt/ui      | ^4.8    | UI component library       |
+| Tailwind CSS  | ^4.3    | Utility-first styling      |
+| Reka UI       | ^2.9    | Headless UI primitives     |
+| Axios         | ^1.16   | HTTP client                |
+| Zod           | ^4.4    | Schema validation          |
+| jwt-decode    | ^4.0    | JWT token parsing          |
+| VueUse        | ^14.3   | Composable utilities       |
+| TypeScript    | ~6.0    | Type safety                |
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Requirements
 
-## Type Support for `.vue` Imports in TS
+- Node.js `^20.19.0` or `>=22.12.0`
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Environment Variables
+
+Create a `.env` file at the project root:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000
+
+```
 
 ## Customize configuration
 
@@ -46,3 +62,43 @@ pnpm build
 ```sh
 pnpm lint
 ```
+
+## Pages & Routing
+
+### Public (no login required)
+
+| Route       | Description                       |
+| ----------- | --------------------------------- |
+| `/login`    | Login page                        |
+| `/register` | Organization + admin registration |
+
+### Super Admin
+
+| Route                | Description                                             |
+| -------------------- | ------------------------------------------------------- |
+| `/dashboard`         | Overview stats (orgs, approvals, leases, payments)      |
+| `/organizations`     | All orgs with tabs: All / Pending / Verified / Rejected |
+| `/organizations/:id` | Org detail — approve or reject with reason              |
+| `/users`             | All users across all organizations                      |
+| `/profile`           | View/edit own profile, change password                  |
+
+### OrgAdmin (Vendor & Clinic)
+
+| Route           | Description                                                      |
+| --------------- | ---------------------------------------------------------------- |
+| `/dashboard`    | Org-scoped stats (leases, payments, equipment)                   |
+| `/organization` | View/edit own org info                                           |
+| `/users`        | Users in own org — add Staff/Viewer, deactivate                  |
+| `/equipment`    | _(Vendor only)_ List, add, edit equipment                        |
+| `/contracts`    | Contracts — approve/complete (Vendor) or create request (Clinic) |
+| `/payments`     | Payments — confirm received (Vendor)                             |
+| `/profile`      | View/edit own profile, change password                           |
+
+## Authentication
+
+The app uses JWT-based auth with access + refresh tokens.
+
+- Access token is stored in memory (Pinia store).
+- Refresh token is persisted (cookie or localStorage) and used via `POST /api/auth/refresh`.
+- Axios interceptors handle automatic token refresh on 401 responses.
+- Route guards in Vue Router enforce role-based access (SuperAdmin / OrgAdmin / Staff / Viewer).

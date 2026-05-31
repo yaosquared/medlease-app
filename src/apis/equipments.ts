@@ -10,25 +10,25 @@ export const getEquipments = async ({
   limit?: number
   status?: number
 }) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/equipments`, {
+  const res = await api.get(`/api/admin/equipments`, {
     params: { page: pageParam, limit, status },
   })
   return res.data
 }
 
 export const createEquipment = async (payload: TEquipmentPayload) => {
-  const res = await api.post(`${import.meta.env.VITE_API_URL}/api/admin/equipments`, payload)
+  const res = await api.post(`/api/admin/equipments`, payload)
   return res.data
 }
 
 export const getEquipmentById = async (equipmentId: string) => {
-  const res = await api.get(`${import.meta.env.VITE_API_URL}/api/admin/equipments/${equipmentId}`)
+  const res = await api.get(`/api/admin/equipments/${equipmentId}`)
   return res.data
 }
 
 export const updateEquipment = async (equipmentId: string, payload: TEquipmentPayload) => {
   const res = await api.put(
-    `${import.meta.env.VITE_API_URL}/api/admin/equipments/${equipmentId}`,
+    `/api/admin/equipments/${equipmentId}`,
     payload,
   )
   return res.data
@@ -36,7 +36,7 @@ export const updateEquipment = async (equipmentId: string, payload: TEquipmentPa
 
 export const deleteEquipment = async (equipmentId: string) => {
   const res = await api.delete(
-    `${import.meta.env.VITE_API_URL}/api/admin/equipments/${equipmentId}`,
+    `/api/admin/equipments/${equipmentId}`,
   )
   return res.data
 }
