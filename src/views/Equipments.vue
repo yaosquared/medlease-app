@@ -42,7 +42,6 @@ const onStatusChange = (value: number | null) => {
 
 <template>
   <div class="h-full flex flex-col gap-4 min-h-0">
-    <CreateEquipmentModal v-if="isOrgAdmin" v-model:open="showCreateEquipmentModal" />
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load equipments
     </div>
@@ -137,5 +136,6 @@ const onStatusChange = (value: number | null) => {
       </div>
       <Pagination v-model:page="page" :total="total" :items-per-page="EQUIPMENTS_PER_PAGE" />
     </template>
+    <CreateEquipmentModal v-if="isOrgAdmin || isStaff" v-model:open="showCreateEquipmentModal" />
   </div>
 </template>

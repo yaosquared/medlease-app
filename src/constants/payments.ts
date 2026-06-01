@@ -3,10 +3,9 @@ export const PAYMENTS_PER_PAGE = 12
 export const PAYMENT_STATUS_OPTIONS = [
   { label: 'All', value: null },
   { label: 'Pending', value: 0 },
-  { label: 'Partial', value: 1 },
-  { label: 'Completed', value: 2 },
+  { label: 'Processing', value: 1 },
+  { label: 'Paid', value: 2 },
   { label: 'Overdue', value: 3 },
-  { label: 'Cancelled', value: 4 },
 ]
 
 export const PAYMENT_METHOD_OPTIONS = [

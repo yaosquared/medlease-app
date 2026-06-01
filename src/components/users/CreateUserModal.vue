@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useMutation, useQueryCache } from '@pinia/colada'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
@@ -16,14 +16,16 @@ const open = defineModel<boolean>('open')
 const toast = useToast()
 const queryCache = useQueryCache()
 
-const state = reactive({
+const initialState = {
   fullName: '',
   username: '',
   email: '',
   contactNumber: '',
   password: '',
   role: 2,
-})
+}
+const state = reactive({ ...initialState })
+const showPassword = ref(false)
 
 const {
   mutate: create,
@@ -33,6 +35,7 @@ const {
   mutation: (payload: TCreateUserSchema) => createOwnOrgUser(payload),
   onSuccess: () => {
     open.value = false
+    Object.assign(state, initialState)
     toast.add({ title: 'User created successfully', color: 'success' })
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
@@ -83,10 +86,20 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         <UFormField label="Password" name="password">
           <UInput
             v-model="state.password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             placeholder="Min. 8 characters"
             class="w-full"
-          />
+          >
+            <template #trailing>
+              <UButton
+                color="neutral"
+                variant="link"
+                :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                @click="showPassword = !showPassword"
+              />
+            </template>
+          </UInput>
         </UFormField>
         <UFormField label="Role" name="role">
           <USelect

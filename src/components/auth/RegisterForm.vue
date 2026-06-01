@@ -145,7 +145,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
     </div>
     <ApiErrorAlert :messages="errorMessage" />
     <div class="mt-6">
-      <UButton type="submit" block>{{
+      <UButton type="submit" block class="cursor-pointer">{{
         isLoading ? 'Creating account...' : 'Create Account'
       }}</UButton>
     </div>

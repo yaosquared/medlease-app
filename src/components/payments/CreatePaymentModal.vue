@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
 import { storeToRefs } from 'pinia'
 import type { AxiosError } from 'axios'
@@ -27,20 +27,23 @@ const state = reactive({
   remarks: '',
 })
 
-const { data: contractsData } = useQuery({
-  key: () => ['contracts-completed'],
-  query: () => getContracts({ pageParam: 1, status: 2 }),
+const { data: contractsData, status: contractsStatus } = useQuery({
+  key: () => ['contracts-for-payment'],
+  query: () => getContracts({ pageParam: 1, statuses: [2, 3], excludePending: true }),
   enabled: computed(() => !!open.value && (isOrgAdmin.value || isStaff.value)),
+  staleTime: 0,
 })
 
-const completedContracts = computed<TContractSelectOption[]>(() =>
-  (contractsData.value?.data ?? [])
-    .filter((c: TContract) => !c.hasPendingPayment)
-    .map((c: TContract) => ({
-      label: c.contractNumber,
-      value: c.id,
-    })),
-)
+const contractsLoading = computed(() => contractsStatus.value === 'pending')
+
+const contractOptions = computed<TContractSelectOption[]>(() => {
+  if (contractsLoading.value) return []
+
+  return (contractsData.value?.data ?? []).map((c: TContract) => ({
+    label: c.contractNumber,
+    value: c.id,
+  }))
+})
 
 const { data: previewData, status: previewStatus } = useQuery({
   key: () => ['payment-preview', state.leaseContractId],
@@ -48,7 +51,7 @@ const { data: previewData, status: previewStatus } = useQuery({
   enabled: computed(() => !!state.leaseContractId),
 })
 
-const previewLoading = computed(() => previewStatus.value === 'pending')
+const previewLoading = computed(() => previewStatus.value === 'pending' && !!state.leaseContractId)
 const preview = computed(() => previewData.value?.data ?? null)
 
 const { mutate, asyncStatus, error } = useMutation({
@@ -56,7 +59,6 @@ const { mutate, asyncStatus, error } = useMutation({
   onSuccess: () => {
     open.value = false
     toast.add({ title: 'Payment recorded successfully', color: 'success' })
-    resetForm()
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({
@@ -78,6 +80,13 @@ const onSubmit = (payload: FormSubmitEvent<TCreatePaymentSchema>) => {
   mutate(payload.data)
 }
 
+watch(open, (val) => {
+  if (!val) {
+    resetForm()
+    queryCache.invalidateQueries({ key: ['contracts-for-payment'] })
+  }
+})
+
 const isLoading = computed(() => asyncStatus.value === 'loading')
 const hasErrors = computed(() => !createPaymentSchema.safeParse(state).success)
 const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
@@ -95,15 +104,15 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         <UFormField label="Contract" name="leaseContractId">
           <USelect
             v-model="state.leaseContractId"
-            :items="completedContracts"
+            :items="contractOptions"
             value-key="value"
-            placeholder="Select a completed contract"
+            label-key="label"
+            :placeholder="contractsLoading ? 'Loading contracts...' : 'Select a contract'"
+            :disabled="contractsLoading"
             class="w-full"
           />
         </UFormField>
-
         <div v-if="previewLoading" class="text-sm text-dimmed">Calculating payment details...</div>
-
         <div
           v-if="preview && !previewLoading"
           class="grid grid-cols-2 gap-3 p-3 rounded-lg bg-elevated text-sm"
@@ -127,7 +136,6 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             <p class="font-semibold text-primary">{{ formatCurrency(preview.totalAmount) }}</p>
           </div>
         </div>
-
         <UFormField label="Payment method" name="paymentMethod">
           <USelect
             v-model="state.paymentMethod"
@@ -137,7 +145,6 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             class="w-full"
           />
         </UFormField>
-
         <UFormField label="Remarks" name="remarks">
           <UTextarea
             v-model="state.remarks"
@@ -146,9 +153,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :rows="3"
           />
         </UFormField>
-
         <ApiErrorAlert :messages="errorMessage" />
-
         <div class="flex justify-end gap-2">
           <UButton
             color="neutral"

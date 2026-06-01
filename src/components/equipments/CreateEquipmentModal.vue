@@ -18,7 +18,7 @@ const toast = useToast()
 const router = useRouter()
 const queryCache = useQueryCache()
 
-const state = reactive({
+const initialState = {
   imageUrl: '',
   name: '',
   brand: '',
@@ -28,12 +28,14 @@ const state = reactive({
   monthlyRate: 0,
   condition: 0,
   status: 0,
-})
+}
+const state = reactive({ ...initialState })
 
 const { mutate, asyncStatus, error } = useMutation({
   mutation: (payload: TCreateEquipmentSchema) => createEquipment(payload),
   onSuccess: () => {
     open.value = false
+    Object.assign(state, initialState)
     toast.add({ title: 'Equipment created successfully', color: 'success' })
     router.push('/equipments')
   },

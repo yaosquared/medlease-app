@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useMutation, useQuery } from '@pinia/colada'
+import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -15,6 +15,8 @@ import { formatCurrency, formatDate } from '@/utils/format'
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
+const queryCache = useQueryCache()
 const { isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
 
 const contractId = route.params.contractId as string
@@ -22,7 +24,7 @@ const showApproveConfirmationModal = ref(false)
 const showCancelConfirmationModal = ref(false)
 const showCompleteConfirmationModal = ref(false)
 
-const { data, asyncStatus, refresh } = useQuery({
+const { data, asyncStatus } = useQuery({
   key: () => ['contract', contractId],
   query: () => getContractById(contractId),
 })
@@ -33,24 +35,27 @@ const { mutate: approve, asyncStatus: approveStatus } = useMutation({
   mutation: () => approveContract(contractId),
   onSuccess: () => {
     showApproveConfirmationModal.value = false
-    refresh()
+    toast.add({ title: 'Contract approved successfully', color: 'success' })
   },
+  onSettled: () => queryCache.invalidateQueries({ key: ['contract', contractId] }),
 })
 
 const { mutate: cancel, asyncStatus: cancelStatus } = useMutation({
   mutation: () => cancelContract(contractId),
   onSuccess: () => {
     showCancelConfirmationModal.value = false
-    refresh()
+    toast.add({ title: 'Contract cancelled successfully', color: 'success' })
   },
+  onSettled: () => queryCache.invalidateQueries({ key: ['contract', contractId] }),
 })
 
 const { mutate: complete, asyncStatus: completeStatus } = useMutation({
   mutation: () => completeContract(contractId),
   onSuccess: () => {
     showCompleteConfirmationModal.value = false
-    refresh()
+    toast.add({ title: 'Contract marked as completed successfully', color: 'success' })
   },
+  onSettled: () => queryCache.invalidateQueries({ key: ['contract', contractId] }),
 })
 
 const statusBadge = computed(() => {
@@ -204,7 +209,7 @@ const goToHistory = () => {
     </template>
   </UCard>
   <ConfirmationModal
-    v-if="isVendor && isOrgAdmin && contract.status === 0"
+    v-if="isVendor && isOrgAdmin && contract?.status === 0"
     v-model:open="showApproveConfirmationModal"
     title="Approve Contract"
     message="Are you sure you want to approve this contract? This will mark it as active."
@@ -214,7 +219,7 @@ const goToHistory = () => {
     @confirm="approve()"
   />
   <ConfirmationModal
-    v-if="isOrgAdmin && contract.status === 1"
+    v-if="isOrgAdmin && contract?.status === 1"
     v-model:open="showCancelConfirmationModal"
     title="Cancel Contract"
     message="Are you sure you want to cancel this contract? This action cannot be undone."
@@ -224,7 +229,7 @@ const goToHistory = () => {
     @confirm="cancel()"
   />
   <ConfirmationModal
-    v-if="isVendor && isOrgAdmin && contract.status === 1"
+    v-if="isVendor && isOrgAdmin && contract?.status === 1"
     v-model:open="showCompleteConfirmationModal"
     title="Complete Contract"
     message="Are you sure you want to mark this contract as completed?"

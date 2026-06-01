@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
-import { useMutation, useQueryCache } from '@pinia/colada'
+import { useMutation } from '@pinia/colada'
 import { storeToRefs } from 'pinia'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
@@ -14,7 +14,7 @@ import type { TApiErrorResponse } from '@/types/api'
 const open = defineModel<boolean>('open')
 
 const toast = useToast()
-const queryCache = useQueryCache()
+const { fetchProfile } = useProfileStore()
 const { profile } = storeToRefs(useProfileStore())
 
 const state = reactive<TEditProfileSchema>({
@@ -36,7 +36,7 @@ const { mutate, asyncStatus, error } = useMutation({
   onSuccess: () => {
     open.value = false
     toast.add({ title: 'Profile updated successfully', color: 'success' })
-    queryCache.invalidateQueries({ key: ['profile'] })
+    fetchProfile()
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({

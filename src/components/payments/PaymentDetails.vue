@@ -27,6 +27,7 @@ const { mutate: confirm, asyncStatus: confirmStatus } = useMutation({
   mutation: () => confirmPayment(paymentId),
   onSuccess: () => {
     toast.add({ title: 'Payment confirmed successfully', color: 'success' })
+    showDeleteConfirmationtModal.value = false
     queryCache.invalidateQueries({ key: ['payment', paymentId] })
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {

@@ -7,11 +7,11 @@ export const getProfile = async () => {
 }
 
 export const updateProfile = async (payload: TEditProfileSchema) => {
-  const res = await api.put(`/profile`, payload)
+  const res = await api.put(`/api/profile`, payload)
   return res.data
 }
 
 export const changePassword = async (payload: TChangePasswordSchema) => {
-  const res = await api.patch(`/profile/change-password`)
+  const res = await api.patch(`/api/profile/change-password`, payload)
   return res.data
 }

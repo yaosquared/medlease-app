@@ -21,7 +21,10 @@ const { data, asyncStatus, error } = useQuery({
     getContracts({
       pageParam: page.value,
       limit: CONTRACTS_PER_PAGE,
-      status: statusFilter.value ?? undefined,
+      statuses:
+        statusFilter.value !== null && statusFilter.value !== undefined
+          ? [statusFilter.value]
+          : undefined,
     }),
 })
 

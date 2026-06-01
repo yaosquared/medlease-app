@@ -109,13 +109,13 @@ const router = createRouter({
         title: 'Equipments',
         requiresAuth: true,
         layout: 'app',
-        roles: ['OrgAdmin', 'Staff'],
+        roles: ['OrgAdmin', 'Staff', 'Viewer'],
       },
       children: [
         {
           path: '',
           component: Equipments,
-          meta: { roles: ['OrgAdmin', 'Staff'] },
+          meta: { roles: ['OrgAdmin', 'Staff', 'Viewer'] },
         },
 
         {
@@ -125,7 +125,7 @@ const router = createRouter({
             title: 'Equipment Details',
             requiresAuth: true,
             layout: 'app',
-            roles: ['OrgAdmin', 'Staff'],
+            roles: ['OrgAdmin', 'Staff', 'Viewer'],
           },
         },
       ],

@@ -127,7 +127,7 @@ const onDelete = () => {
     <template #footer>
       <div class="flex justify-end gap-2">
         <UButton
-          v-if="isVendor && isOrgAdmin"
+          v-if="isVendor && (isOrgAdmin || isStaff)"
           size="sm"
           color="neutral"
           icon="i-lucide-pencil"
@@ -162,7 +162,7 @@ const onDelete = () => {
     </template>
   </UCard>
   <EditEquipmentModal
-    v-if="isVendor && isOrgAdmin"
+    v-if="isVendor && (isOrgAdmin || isStaff)"
     v-model:open="showEditEquipmentModal"
     :equipment="equipment"
     :equipment-id="equipmentId"

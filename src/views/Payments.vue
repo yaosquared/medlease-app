@@ -78,13 +78,11 @@ const getStatusBadge = (status: number) => {
     case 0:
       return { label: 'Pending', color: 'warning' as const }
     case 1:
-      return { label: 'Partial', color: 'info' as const }
+      return { label: 'Processing', color: 'info' as const }
     case 2:
-      return { label: 'Completed', color: 'success' as const }
+      return { label: 'Paid', color: 'success' as const }
     case 3:
       return { label: 'Overdue', color: 'error' as const }
-    case 4:
-      return { label: 'Cancelled', color: 'neutral' as const }
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }

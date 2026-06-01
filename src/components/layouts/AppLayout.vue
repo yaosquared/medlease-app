@@ -47,7 +47,7 @@ const navItems = computed<NavigationMenuItem[]>(() => {
       { label: 'Contracts', icon: 'i-lucide-file-text', to: '/contracts' },
       { label: 'Payments', icon: 'i-lucide-credit-card', to: '/payments' },
     ],
-    Viewer: [{ label: 'Contracts', icon: 'i-lucide-file-text', to: '/contracts' }],
+    Viewer: [{ label: 'Equipments', icon: 'i-lucide-monitor', to: '/equipments' }],
   }
 
   const role = user.value?.role ?? ''

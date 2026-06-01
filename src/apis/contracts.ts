@@ -1,18 +1,19 @@
 import api from '@/utils/axios'
 import type { TContractPayload } from '@/types/contract'
 
-export const getContracts = async ({
-  pageParam = 1,
-  limit = 10,
-  status,
-}: {
+export const getContracts = async (params: {
   pageParam: number
   limit?: number
-  status?: number
+  statuses?: number[]
+  excludePending?: boolean
 }) => {
-  const res = await api.get(`/api/admin/contracts`, {
-    params: { page: pageParam, limit, status },
-  })
+  const query = new URLSearchParams()
+  query.append('page', String(params.pageParam))
+  if (params.limit) query.append('limit', String(params.limit))
+  params.statuses?.forEach((s) => query.append('statuses', String(s)))
+  if (params.excludePending) query.append('excludePending', 'true')
+
+  const res = await api.get(`/api/admin/contracts?${query.toString()}`)
   return res.data
 }
 
