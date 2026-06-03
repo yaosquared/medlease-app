@@ -31,7 +31,7 @@ A web application for managing medical equipment leasing operations — handling
 Create a `.env` file at the project root:
 
 ```env
-VITE_API_BASE_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5000
 
 ```
 
