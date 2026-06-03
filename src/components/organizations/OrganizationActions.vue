@@ -27,7 +27,7 @@ const { mutate: approve, isLoading: isApproving } = useMutation({
       color: 'error',
     })
   },
-  onSettled: () => queryCache.invalidateQueries({ key: ['organizations'] }),
+  onSettled: () => queryCache.invalidateQueries({ key: ['organization'] }),
 })
 
 const { mutate: reject, isLoading: isRejecting } = useMutation({
@@ -43,7 +43,7 @@ const { mutate: reject, isLoading: isRejecting } = useMutation({
       color: 'error',
     })
   },
-  onSettled: () => queryCache.invalidateQueries({ key: ['organizations'] }),
+  onSettled: () => queryCache.invalidateQueries({ key: ['organization'] }),
 })
 </script>
 

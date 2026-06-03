@@ -15,6 +15,7 @@ import EquipmentDetails from '@/components/equipments/EquipmentDetails.vue'
 import ContractDetails from '@/components/contracts/ContractDetails.vue'
 import ContractHistory from '@/components/contracts/ContractHistory.vue'
 import PaymentDetails from '@/components/payments/PaymentDetails.vue'
+import NotFound from '@/views/NotFound.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -199,6 +200,7 @@ const router = createRouter({
         },
       ],
     },
+    { path: '/:pathMatch(.*)*', component: NotFound, meta: { layout: 'auth' } },
   ],
 })
 

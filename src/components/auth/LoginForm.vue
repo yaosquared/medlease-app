@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useMutation } from '@pinia/colada'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
@@ -15,6 +15,7 @@ import { getApiErrorMessages } from '@/utils/errors'
 const { setTokens } = useAuthStore()
 const toast = useToast()
 const router = useRouter()
+const route = useRoute()
 
 const fields = [
   {
@@ -23,6 +24,7 @@ const fields = [
     label: 'Username',
     placeholder: 'Enter your username',
     required: true,
+    defaultValue: (route.query.username as string) ?? '',
     ui: { error: 'text-xs' },
   },
   {
