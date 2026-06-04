@@ -15,6 +15,13 @@ const page = defineModel<number>('page')
       :items-per-page="itemsPerPage"
       :sibling-count="1"
       show-edges
+      :ui="{
+        item: 'cursor-pointer',
+        first: 'cursor-pointer',
+        prev: 'cursor-pointer',
+        next: 'cursor-pointer',
+        last: 'cursor-pointer',
+      }"
     />
   </div>
 </template>

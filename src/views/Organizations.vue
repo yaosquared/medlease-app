@@ -7,20 +7,24 @@ import type { TableColumn, TableRow } from '@nuxt/ui'
 import { getOrganizations } from '@/apis/organizations'
 import { ORGS_PER_PAGE, STATUS_OPTIONS } from '@/constants/organizations'
 import type { TOrganization } from '@/types/organization'
+import SearchBar from '@/components/ui/SearchBar.vue'
 
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 
 const page = ref(1)
+const searchQuery = ref('')
+const debouncedSearch = ref('')
 const statusFilter = ref<number | null>(null)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['organizations', page.value, statusFilter.value],
+  key: () => ['organizations', page.value, statusFilter.value, debouncedSearch.value],
   query: () =>
     getOrganizations({
       pageParam: page.value,
       limit: ORGS_PER_PAGE,
       status: statusFilter.value ?? undefined,
+      search: debouncedSearch.value || undefined,
     }),
 })
 
@@ -112,27 +116,36 @@ const goToDetails = (_e: Event, row: TableRow<TOrganization>) => {
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load organizations
     </div>
-    <div v-else>
+    <div v-else class="flex flex-col gap-4">
       <div class="flex items-center gap-2">
+        <SearchBar
+          v-model="searchQuery"
+          placeholder="Search for organization name..."
+          class="max-w-sm"
+          @search="
+            (val) => {
+              debouncedSearch = val
+              page = 1
+            }
+          "
+        />
         <USelect
           :model-value="statusFilter"
           :items="STATUS_OPTIONS"
           value-key="value"
           placeholder="Filter by status"
-          class="w-48"
+          class="w-48 cursor-pointer"
           @update:model-value="onStatusChange"
         />
       </div>
-      <div class="flex flex-col gap-4">
-        <UTable
-          :data="rows"
-          :columns="organizationColumns"
-          :loading="asyncStatus === 'loading'"
-          class="flex-1 cursor-pointer"
-          @select="goToDetails"
-        />
-        <Pagination v-model:page="page" :total="total" :items-per-page="ORGS_PER_PAGE" />
-      </div>
+      <UTable
+        :data="rows"
+        :columns="organizationColumns"
+        :loading="asyncStatus === 'loading'"
+        class="flex-1 cursor-pointer"
+        @select="goToDetails"
+      />
+      <Pagination v-model:page="page" :total="total" :items-per-page="ORGS_PER_PAGE" />
     </div>
   </div>
 </template>

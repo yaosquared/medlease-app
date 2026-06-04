@@ -5,13 +5,15 @@ export const getPayments = async ({
   pageParam = 1,
   limit = 10,
   status,
+  search,
 }: {
   pageParam: number
   limit?: number
   status?: number
+  search?: string
 }) => {
   const res = await api.get(`/api/admin/payments`, {
-    params: { page: pageParam, limit, status },
+    params: { page: pageParam, limit, status, search },
   })
   return res.data
 }

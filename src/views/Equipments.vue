@@ -18,16 +18,19 @@ const { isOrgAdmin, isStaff, isVendor } = storeToRefs(useAuthStore())
 const router = useRouter()
 
 const page = ref(1)
+const searchQuery = ref('')
+const debouncedSearch = ref('')
 const statusFilter = ref<number | null>(null)
 const showCreateEquipmentModal = ref(false)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['equipments', page.value, statusFilter.value],
+  key: () => ['equipments', page.value, statusFilter.value, debouncedSearch.value],
   query: () =>
     getEquipments({
       pageParam: page.value,
       limit: EQUIPMENTS_PER_PAGE,
       status: statusFilter.value ?? undefined,
+      search: debouncedSearch.value || undefined,
     }),
 })
 
@@ -46,15 +49,28 @@ const onStatusChange = (value: number | null) => {
       Failed to load equipments
     </div>
     <template v-else>
-      <div class="flex items-center gap-2 shrink-0">
-        <USelect
-          :model-value="statusFilter"
-          :items="STATUS_OPTIONS"
-          value-key="value"
-          placeholder="Filter by status"
-          class="w-48"
-          @update:model-value="onStatusChange"
-        />
+      <div class="flex justify-between items-center gap-2 shrink-0">
+        <div class="w-1/2 flex gap-2">
+          <SearchBar
+            v-model="searchQuery"
+            placeholder="Search for equipment name..."
+            class="max-w-sm"
+            @search="
+              (val) => {
+                debouncedSearch = val
+                page = 1
+              }
+            "
+          />
+          <USelect
+            :model-value="statusFilter"
+            :items="STATUS_OPTIONS"
+            value-key="value"
+            placeholder="Filter by status"
+            class="w-48 cursor-pointer"
+            @update:model-value="onStatusChange"
+          />
+        </div>
         <UButton
           v-if="isVendor && (isOrgAdmin || isStaff)"
           icon="i-lucide-plus"

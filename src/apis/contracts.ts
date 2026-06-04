@@ -6,12 +6,14 @@ export const getContracts = async (params: {
   limit?: number
   statuses?: number[]
   excludePending?: boolean
+  search?: string
 }) => {
   const query = new URLSearchParams()
   query.append('page', String(params.pageParam))
   if (params.limit) query.append('limit', String(params.limit))
   params.statuses?.forEach((s) => query.append('statuses', String(s)))
   if (params.excludePending) query.append('excludePending', 'true')
+  if (params.search) query.append('search', params.search)
 
   const res = await api.get(`/api/admin/contracts?${query.toString()}`)
   return res.data

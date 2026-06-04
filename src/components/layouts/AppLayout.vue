@@ -178,7 +178,11 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() =>
         <UDropdownMenu
           :items="userItems"
           :content="{ align: 'center', collisionPadding: 12 }"
-          :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-48' }"
+          :ui="{
+            content: 'w-(--reka-dropdown-menu-trigger-width) min-w-48',
+            item: 'cursor-pointer',
+          }"
+          class="cursor-pointer"
         >
           <UButton
             v-bind="userDetail"

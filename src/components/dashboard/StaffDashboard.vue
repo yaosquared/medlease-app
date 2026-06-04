@@ -93,7 +93,7 @@ const stats = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="h-full flex flex-col gap-6">
     <div :class="['grid gap-4', isVendor ? 'grid-cols-3' : 'grid-cols-2']">
       <template v-if="isLoading">
         <USkeleton v-for="i in 2" :key="i" class="h-28 rounded-xl" />
@@ -113,7 +113,7 @@ const stats = computed(() => {
       </template>
     </div>
     <div class="h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <UCard>
+      <UCard class="flex flex-col min-h-0" :ui="{ body: 'flex flex-col flex-1 min-h-0' }">
         <template #header>
           <div class="flex items-center justify-between">
             <p class="font-semibold">Recent Contracts</p>
@@ -128,7 +128,7 @@ const stats = computed(() => {
             >
           </div>
         </template>
-        <USkeleton v-if="contractsStatus === 'loading'" class="h-48 w-full" />
+        <USkeleton v-if="contractsStatus === 'loading'" class="flex-1 min-h-0 w-full" />
         <div v-else class="flex flex-col divide-y divide-default">
           <div
             v-for="contract in recentContracts"
@@ -158,7 +158,7 @@ const stats = computed(() => {
           </p>
         </div>
       </UCard>
-      <UCard>
+      <UCard class="flex flex-col min-h-0" :ui="{ body: 'flex flex-col flex-1 min-h-0' }">
         <template #header>
           <div class="flex items-center justify-between">
             <p class="font-semibold">Recent Payments</p>
@@ -173,7 +173,7 @@ const stats = computed(() => {
             >
           </div>
         </template>
-        <USkeleton v-if="paymentsStatus === 'loading'" class="h-48 w-full" />
+        <USkeleton v-if="paymentsStatus === 'loading'" class="flex-1 min-h-0 w-full" />
         <div v-else class="flex flex-col divide-y divide-default">
           <div
             v-for="payment in recentPayments"

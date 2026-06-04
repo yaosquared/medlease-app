@@ -5,13 +5,15 @@ export const getEquipments = async ({
   pageParam = 1,
   limit = 10,
   status,
+  search,
 }: {
   pageParam: number
   limit?: number
   status?: number
+  search?: string
 }) => {
   const res = await api.get(`/api/admin/equipments`, {
-    params: { page: pageParam, limit, status },
+    params: { page: pageParam, limit, status, search },
   })
   return res.data
 }
@@ -27,16 +29,11 @@ export const getEquipmentById = async (equipmentId: string) => {
 }
 
 export const updateEquipment = async (equipmentId: string, payload: TEquipmentPayload) => {
-  const res = await api.put(
-    `/api/admin/equipments/${equipmentId}`,
-    payload,
-  )
+  const res = await api.put(`/api/admin/equipments/${equipmentId}`, payload)
   return res.data
 }
 
 export const deleteEquipment = async (equipmentId: string) => {
-  const res = await api.delete(
-    `/api/admin/equipments/${equipmentId}`,
-  )
+  const res = await api.delete(`/api/admin/equipments/${equipmentId}`)
   return res.data
 }

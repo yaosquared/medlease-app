@@ -10,24 +10,25 @@ import type { TPayment } from '@/types/payment'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { formatCurrency, formatDate } from '@/utils/format'
-// import { PAYMENTS_PER_PAGE, PAYMENT_STATUS_OPTIONS } from '@/constants/payments'
-// import type { TPayment } from '@/types/payment'
 
 const { isOrgAdmin, isStaff, isClinic } = storeToRefs(useAuthStore())
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 
 const page = ref(1)
+const searchQuery = ref('')
+const debouncedSearch = ref('')
 const statusFilter = ref<number | null>(null)
 const showCreatePaymentModal = ref(false)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['payments', page.value, statusFilter.value],
+  key: () => ['payments', page.value, statusFilter.value, debouncedSearch.value],
   query: () =>
     getPayments({
       pageParam: page.value,
       limit: PAYMENTS_PER_PAGE,
       status: statusFilter.value ?? undefined,
+      search: debouncedSearch.value || undefined,
     }),
 })
 
@@ -77,12 +78,12 @@ const getStatusBadge = (status: number) => {
   switch (status) {
     case 0:
       return { label: 'Pending', color: 'warning' as const }
-    case 1:
-      return { label: 'Processing', color: 'info' as const }
+    // case 1:
+    //   return { label: 'Processing', color: 'info' as const }
     case 2:
       return { label: 'Paid', color: 'success' as const }
-    case 3:
-      return { label: 'Overdue', color: 'error' as const }
+    // case 3:
+    //   return { label: 'Overdue', color: 'error' as const }
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }
@@ -103,16 +104,29 @@ const onStatusChange = (value: number | null) => {
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load payments
     </div>
-    <div v-else>
+    <div v-else class="flex flex-col gap-4">
       <div class="flex justify-between items-center gap-2">
-        <USelect
-          :model-value="statusFilter"
-          :items="PAYMENT_STATUS_OPTIONS"
-          value-key="value"
-          placeholder="Filter by status"
-          class="w-48"
-          @update:model-value="onStatusChange"
-        />
+        <div class="w-1/2 flex gap-2">
+          <SearchBar
+            v-model="searchQuery"
+            placeholder="Search for payment reference..."
+            class="max-w-sm"
+            @search="
+              (val) => {
+                debouncedSearch = val
+                page = 1
+              }
+            "
+          />
+          <USelect
+            :model-value="statusFilter"
+            :items="PAYMENT_STATUS_OPTIONS"
+            value-key="value"
+            placeholder="Filter by status"
+            class="w-48 cursor-pointer"
+            @update:model-value="onStatusChange"
+          />
+        </div>
         <UButton
           v-if="isClinic && (isOrgAdmin || isStaff)"
           icon="i-lucide-plus"

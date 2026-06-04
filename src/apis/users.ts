@@ -4,13 +4,15 @@ export const getUsers = async ({
   pageParam = 1,
   limit = 10,
   role,
+  search,
 }: {
   pageParam: number
   limit?: number
   role?: number
+  search?: string
 }) => {
   const res = await api.get(`/api/super-admin/users`, {
-    params: { page: pageParam, limit, role },
+    params: { page: pageParam, limit, role, search },
   })
   return res.data
 }
@@ -29,13 +31,15 @@ export const getOwnUsers = async ({
   pageParam = 1,
   limit = 10,
   role,
+  search,
 }: {
   pageParam: number
   limit?: number
   role?: number
+  search?: string
 }) => {
   const res = await api.get(`/api/admin/users`, {
-    params: { page: pageParam, limit, role },
+    params: { page: pageParam, limit, role, search },
   })
   return res.data
 }

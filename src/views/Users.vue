@@ -15,16 +15,19 @@ const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 
 const page = ref(1)
+const searchQuery = ref('')
+const debouncedSearch = ref('')
 const roleFilter = ref<number | null>(null)
 const showCreateUserModal = ref(false)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['users', page.value, roleFilter.value],
+  key: () => ['users', page.value, roleFilter.value, debouncedSearch.value],
   query: () => {
     const params = {
       pageParam: page.value,
       limit: USERS_PER_PAGE,
       role: roleFilter.value ?? undefined,
+      search: debouncedSearch.value || undefined,
     }
     return isSuperAdmin.value ? getUsers(params) : getOwnUsers(params)
   },
@@ -113,16 +116,29 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load users
     </div>
-    <div v-else>
-      <div class="flex items-center gap-2">
-        <USelect
-          :model-value="roleFilter"
-          :items="ROLE_OPTIONS"
-          value-key="value"
-          placeholder="Filter by role"
-          class="w-48"
-          @update:model-value="onRoleChange"
-        />
+    <div v-else class="flex flex-col gap-4">
+      <div class="flex justify-between items-center gap-2">
+        <div class="w-1/2 flex gap-2">
+          <SearchBar
+            v-model="searchQuery"
+            class="max-w-sm"
+            placeholder="Search for full name / username..."
+            @search="
+              (val) => {
+                debouncedSearch = val
+                page = 1
+              }
+            "
+          />
+          <USelect
+            :model-value="roleFilter"
+            :items="ROLE_OPTIONS"
+            value-key="value"
+            placeholder="Filter by role"
+            class="w-48 cursor-pointer"
+            @update:model-value="onRoleChange"
+          />
+        </div>
         <UButton
           v-if="isOrgAdmin"
           icon="i-lucide-plus"

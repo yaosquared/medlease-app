@@ -13,10 +13,12 @@ const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 
 const page = ref(1)
+const searchQuery = ref('')
+const debouncedSearch = ref('')
 const statusFilter = ref<number | null>(null)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['contracts', page.value, statusFilter.value],
+  key: () => ['contracts', page.value, statusFilter.value, debouncedSearch.value],
   query: () =>
     getContracts({
       pageParam: page.value,
@@ -25,6 +27,7 @@ const { data, asyncStatus, error } = useQuery({
         statusFilter.value !== null && statusFilter.value !== undefined
           ? [statusFilter.value]
           : undefined,
+      search: debouncedSearch.value || undefined,
     }),
 })
 
@@ -42,10 +45,23 @@ const usersColumns: TableColumn<TContract>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Contract Status',
     cell: ({ row }) => {
       const { label, color } = getStatusBadge(row.getValue('status'))
       return h(UBadge, { variant: 'subtle', color }, () => label)
+    },
+  },
+  {
+    accessorKey: 'hasPendingPayment',
+    header: 'Payment Status',
+    cell: ({ row }) => {
+      const hasPending = row.getValue('hasPendingPayment') as boolean
+      const hasPaid = row.original.hasPaidPayment
+
+      if (hasPending)
+        return h(UBadge, { variant: 'subtle', color: 'warning' }, () => 'Pending Payment')
+      if (hasPaid) return h(UBadge, { variant: 'subtle', color: 'success' }, () => 'Paid')
+      return '—'
     },
   },
   {
@@ -95,27 +111,36 @@ const onStatusChange = (value: number | null) => {
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
       Failed to load users
     </div>
-    <div v-else>
+    <div v-else class="flex flex-col gap-4">
       <div class="flex items-center gap-2">
+        <SearchBar
+          v-model="searchQuery"
+          placeholder="Search for contract reference..."
+          class="max-w-sm"
+          @search="
+            (val) => {
+              debouncedSearch = val
+              page = 1
+            }
+          "
+        />
         <USelect
           :model-value="statusFilter"
           :items="STATUS_OPTIONS"
           value-key="value"
           placeholder="Filter by role"
-          class="w-48"
+          class="w-48 cursor-pointer"
           @update:model-value="onStatusChange"
         />
       </div>
-      <div class="flex flex-col gap-4">
-        <UTable
-          :data="rows"
-          :columns="usersColumns"
-          :loading="asyncStatus === 'loading'"
-          class="flex-1 cursor-pointer"
-          @select="goToDetails"
-        />
-        <Pagination v-model:page="page" :total="total" :items-per-page="CONTRACTS_PER_PAGE" />
-      </div>
+      <UTable
+        :data="rows"
+        :columns="usersColumns"
+        :loading="asyncStatus === 'loading'"
+        class="flex-1 cursor-pointer"
+        @select="goToDetails"
+      />
+      <Pagination v-model:page="page" :total="total" :items-per-page="CONTRACTS_PER_PAGE" />
     </div>
   </div>
 </template>

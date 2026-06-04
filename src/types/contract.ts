@@ -14,6 +14,7 @@ export type TContract = {
   lesseeOrganizationId: string
   approvedByUserId?: string
   hasPendingPayment: boolean
+  hasPaidPayment: boolean
 }
 
 export type TContractPayload = {
