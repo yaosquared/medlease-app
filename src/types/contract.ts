@@ -27,4 +27,7 @@ export type TContractPayload = {
 export type TContractSelectOption = {
   label: string
   value: string
+  monthlyPayment: number
+  startDate: string
+  endDate: string
 }

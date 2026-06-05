@@ -141,7 +141,7 @@ const stats = computed(() => [
           </div>
         </template>
         <USkeleton v-if="orgsStatus === 'loading'" class="flex-1 min-h-0 w-full" />
-        <div v-else class="flex flex-col divide-y divide-default">
+        <div v-else class="flex-1 flex flex-col divide-y divide-default">
           <div
             v-for="org in recentOrgs"
             :key="org.id"
@@ -168,7 +168,10 @@ const stats = computed(() => [
               </UBadge>
             </div>
           </div>
-          <p v-if="recentOrgs.length === 0" class="text-sm text-dimmed text-center py-6">
+          <p
+            v-if="recentOrgs.length === 0"
+            class="flex-1 flex justify-center items-center text-sm text-dimmed text-center py-6"
+          >
             No organizations found.
           </p>
         </div>
@@ -190,7 +193,7 @@ const stats = computed(() => [
           </div>
         </template>
         <USkeleton v-if="usersStatus === 'loading'" class="flex-1 min-h-0 w-full" />
-        <div v-else class="flex flex-col divide-y divide-default">
+        <div v-else class="flex-1 flex flex-col divide-y divide-default">
           <div
             v-for="user in recentUsers"
             :key="user.id"
@@ -217,7 +220,10 @@ const stats = computed(() => [
               </UBadge>
             </div>
           </div>
-          <p v-if="recentUsers.length === 0" class="text-sm text-dimmed text-center py-6">
+          <p
+            v-if="recentUsers.length === 0"
+            class="flex-1 flex justify-center items-center text-sm text-dimmed text-center py-6"
+          >
             No users found.
           </p>
         </div>

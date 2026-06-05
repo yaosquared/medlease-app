@@ -1,5 +1,5 @@
 import api from '@/utils/axios'
-import type { TCreatePaymentSchema } from '@/schemas/payment'
+import type { TAddPenaltySchema, TCreatePaymentSchema } from '@/schemas/payment'
 
 export const getPayments = async ({
   pageParam = 1,
@@ -33,9 +33,7 @@ export const confirmPayment = async (paymentId: string) => {
   return res.data
 }
 
-export const getPenaltyPreview = async (contractId: string) => {
-  const res = await api.get(`/api/admin/payments/penalty-preview`, {
-    params: { contractId },
-  })
+export const addPenalty = async (paymentId: string, payload: TAddPenaltySchema) => {
+  const res = await api.patch(`/api/admin/payments/${paymentId}/add-penalty`, payload)
   return res.data
 }

@@ -5,7 +5,11 @@ import { useQuery } from '@pinia/colada'
 import type { TableColumn, TableRow } from '@nuxt/ui'
 
 import { getPayments } from '@/apis/payments'
-import { PAYMENT_STATUS_OPTIONS, PAYMENTS_PER_PAGE } from '@/constants/payments'
+import {
+  PAYMENT_STATUS_OPTIONS,
+  PAYMENTS_PER_PAGE,
+  PENALTY_REASON_OPTIONS,
+} from '@/constants/payments'
 import type { TPayment } from '@/types/payment'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -58,6 +62,19 @@ const columns: TableColumn<TPayment>[] = [
     cell: ({ row }) => formatCurrency(row.getValue('amount')),
   },
   {
+    accessorKey: 'penaltyReasons',
+    header: 'Penalty reasons',
+    cell: ({ row }) => {
+      const reasons = row.getValue('penaltyReasons') as number[]
+      if (!reasons?.length) return '-'
+      const labels = reasons.map(
+        (r) => PENALTY_REASON_OPTIONS.find((o) => o.value === r)?.label ?? r,
+      )
+      if (labels.length <= 2) return labels.join(', ')
+      return `${labels.slice(0, 2).join(', ')} +${labels.length - 2} more`
+    },
+  },
+  {
     accessorKey: 'penaltyAmount',
     header: 'Penalty amount',
     cell: ({ row }) => formatCurrency(row.getValue('penaltyAmount')),
@@ -82,8 +99,8 @@ const getStatusBadge = (status: number) => {
     //   return { label: 'Processing', color: 'info' as const }
     case 2:
       return { label: 'Paid', color: 'success' as const }
-    // case 3:
-    //   return { label: 'Overdue', color: 'error' as const }
+    case 3:
+      return { label: 'Overdue', color: 'error' as const }
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }

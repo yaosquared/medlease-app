@@ -5,12 +5,12 @@ import { storeToRefs } from 'pinia'
 import type { AxiosError } from 'axios'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
-import { createPayment, getPenaltyPreview } from '@/apis/payments'
+import { createPayment } from '@/apis/payments'
 import { getContracts } from '@/apis/contracts'
 import { useAuthStore } from '@/stores/auth'
 import { getApiErrorMessages } from '@/utils/errors'
 import { createPaymentSchema, type TCreatePaymentSchema } from '@/schemas/payment'
-import type { TContract, TContractSelectOption } from '@/types/contract'
+import type { TContract } from '@/types/contract'
 import type { TApiErrorResponse } from '@/types/api'
 import { PAYMENT_METHOD_OPTIONS } from '@/constants/payments'
 import { formatCurrency, formatDate } from '@/utils/format'
@@ -36,23 +36,20 @@ const { data: contractsData, status: contractsStatus } = useQuery({
 
 const contractsLoading = computed(() => contractsStatus.value === 'pending')
 
-const contractOptions = computed<TContractSelectOption[]>(() => {
+const contractOptions = computed(() => {
   if (contractsLoading.value) return []
-
-  return (contractsData.value?.data ?? []).map((c: TContract) => ({
+  return ((contractsData.value?.data as TContract[]) ?? []).map((c) => ({
     label: c.contractNumber,
     value: c.id,
+    monthlyPayment: c.monthlyPayment,
+    startDate: c.startDate,
+    endDate: c.endDate,
   }))
 })
 
-const { data: previewData, status: previewStatus } = useQuery({
-  key: () => ['payment-preview', state.leaseContractId],
-  query: () => getPenaltyPreview(state.leaseContractId),
-  enabled: computed(() => !!state.leaseContractId),
-})
-
-const previewLoading = computed(() => previewStatus.value === 'pending' && !!state.leaseContractId)
-const preview = computed(() => previewData.value?.data ?? null)
+const selectedContract = computed(
+  () => contractOptions.value.find((c) => c.value === state.leaseContractId) ?? null,
+)
 
 const { mutate, asyncStatus, error } = useMutation({
   mutation: (payload: TCreatePaymentSchema) => createPayment(payload),
@@ -112,30 +109,44 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             class="w-full"
           />
         </UFormField>
-        <div v-if="previewLoading" class="text-sm text-dimmed">Calculating payment details...</div>
+
         <div
-          v-if="preview && !previewLoading"
-          class="grid grid-cols-2 gap-3 p-3 rounded-lg bg-elevated text-sm"
+          v-if="selectedContract"
+          class="rounded-lg border border-default bg-elevated text-sm overflow-hidden"
         >
-          <div>
-            <p class="text-dimmed">Amount</p>
-            <p class="font-medium">{{ formatCurrency(preview.amount) }}</p>
+          <p
+            class="text-xs font-semibold uppercase tracking-wide text-dimmed px-4 py-2 border-b border-default"
+          >
+            Payment summary
+          </p>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-3 p-4">
+            <div>
+              <p class="text-dimmed text-xs mb-0.5">Contract</p>
+              <p class="font-medium font-mono">{{ selectedContract.label }}</p>
+            </div>
+            <div>
+              <p class="text-dimmed text-xs mb-0.5">Monthly amount</p>
+              <p class="font-semibold text-primary text-base">
+                {{ formatCurrency(selectedContract.monthlyPayment) }}
+              </p>
+            </div>
+            <div>
+              <p class="text-dimmed text-xs mb-0.5">Start date</p>
+              <p class="font-medium">{{ formatDate(selectedContract.startDate) }}</p>
+            </div>
+            <div>
+              <p class="text-dimmed text-xs mb-0.5">End date</p>
+              <p class="font-medium">{{ formatDate(selectedContract.endDate) }}</p>
+            </div>
           </div>
-          <div>
-            <p class="text-dimmed">Penalty amount</p>
-            <p class="font-semibold" :class="preview.penaltyAmount > 0 ? 'text-red-500' : ''">
-              {{ formatCurrency(preview.penaltyAmount) }}
-            </p>
-          </div>
-          <div>
-            <p class="text-dimmed">Due date</p>
-            <p class="font-medium">{{ formatDate(preview.dueDate) }}</p>
-          </div>
-          <div>
-            <p class="text-dimmed">Total</p>
-            <p class="font-semibold text-primary">{{ formatCurrency(preview.totalAmount) }}</p>
+          <div
+            class="flex items-start gap-2 px-4 py-2.5 border-t border-default text-xs text-dimmed"
+          >
+            <UIcon name="i-lucide-info" class="w-3.5 h-3.5 mt-0.5 shrink-0" />
+            <p>Final amount may include penalties added by the vendor upon review.</p>
           </div>
         </div>
+
         <UFormField label="Payment method" name="paymentMethod">
           <USelect
             v-model="state.paymentMethod"
@@ -145,6 +156,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             class="w-full"
           />
         </UFormField>
+
         <UFormField label="Remarks" name="remarks">
           <UTextarea
             v-model="state.remarks"
@@ -153,7 +165,9 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :rows="3"
           />
         </UFormField>
+
         <ApiErrorAlert :messages="errorMessage" />
+
         <div class="flex justify-end gap-2">
           <UButton
             color="neutral"
@@ -168,7 +182,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             type="submit"
             color="primary"
             :loading="isLoading"
-            :disabled="hasErrors || previewLoading"
+            :disabled="hasErrors"
             :class="hasErrors ? 'cursor-not-allowed' : 'cursor-pointer'"
           >
             Record payment

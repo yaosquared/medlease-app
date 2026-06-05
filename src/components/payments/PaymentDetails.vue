@@ -9,6 +9,7 @@ import { confirmPayment, getPaymentById } from '@/apis/payments'
 import { useAuthStore } from '@/stores/auth'
 import type { TApiErrorResponse } from '@/types/api'
 import { formatCurrency, formatDate } from '@/utils/format'
+import { PENALTY_REASON_OPTIONS } from '@/constants/payments'
 
 const route = useRoute()
 const toast = useToast()
@@ -16,9 +17,10 @@ const queryCache = useQueryCache()
 const { isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
 
 const paymentId = route.params.paymentId as string
+const showPenaltyModal = ref(false)
 const showDeleteConfirmationtModal = ref(false)
 
-const { data, asyncStatus, isLoading } = useQuery({
+const { data, asyncStatus } = useQuery({
   key: () => ['payment', paymentId],
   query: () => getPaymentById(paymentId),
 })
@@ -107,20 +109,49 @@ const statusBadge = computed(() => {
         </p>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <p class="text-dimmed">Amount</p>
-            <p class="font-semibold text-primary">{{ formatCurrency(payment.amount) }}</p>
-          </div>
-          <div>
-            <p class="text-dimmed">Penalty amount</p>
-            <p class="font-medium">{{ formatCurrency(payment.penaltyAmount ?? 0) }}</p>
-          </div>
-          <div>
             <p class="text-dimmed">Payment method</p>
             <p class="font-medium">{{ payment.paymentMethod }}</p>
           </div>
           <div>
+            <p class="text-dimmed">Amount</p>
+            <p class="font-semibold text-primary">{{ formatCurrency(payment.amount) }}</p>
+          </div>
+          <div class="col-span-2">
+            <p class="text-dimmed mb-1">Penalty reasons</p>
+            <p v-if="!payment.penaltyReasons?.length" class="font-medium">-</p>
+            <div v-else class="grid grid-cols-2 gap-1">
+              <div
+                v-for="reason in payment.penaltyReasons"
+                :key="reason"
+                class="flex items-center gap-2"
+              >
+                <UIcon name="i-lucide-triangle-alert" class="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <p class="font-medium">
+                  {{ PENALTY_REASON_OPTIONS.find((o) => o.value === reason)?.label }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="text-dimmed">Penalty amount</p>
+            <p class="font-medium" :class="payment.penaltyAmount > 0 ? 'text-red-500' : ''">
+              {{ formatCurrency(payment.penaltyAmount ?? 0) }}
+            </p>
+          </div>
+          <div>
+            <p class="text-dimmed">Total amount</p>
+            <p class="font-semibold text-primary">
+              {{ formatCurrency((payment.amount ?? 0) + (payment.penaltyAmount ?? 0)) }}
+            </p>
+          </div>
+          <div>
             <p class="text-dimmed">Due date</p>
-            <p class="font-medium">{{ formatDate(payment.dueDate) }}</p>
+            <p
+              class="font-medium"
+              :class="{ 'text-red-500': new Date(payment.dueDate) < new Date() }"
+            >
+              {{ formatDate(payment.dueDate) }}
+            </p>
           </div>
           <div>
             <p class="text-dimmed">Paid at</p>
@@ -184,7 +215,17 @@ const statusBadge = computed(() => {
     <template #footer>
       <div class="flex justify-end gap-2">
         <UButton
-          v-if="isVendor && isOrgAdmin && payment.status === 0"
+          v-if="isVendor && isOrgAdmin && payment.status === 0 && !payment.penaltyReasons?.length"
+          size="sm"
+          color="error"
+          icon="i-lucide-triangle-alert"
+          class="cursor-pointer"
+          @click="showPenaltyModal = true"
+        >
+          Add penalty
+        </UButton>
+        <UButton
+          v-if="isVendor && isOrgAdmin && (payment.status === 0 || payment.status === 3)"
           size="sm"
           color="success"
           icon="i-lucide-circle-check"
@@ -197,13 +238,18 @@ const statusBadge = computed(() => {
       </div>
     </template>
   </UCard>
+  <AddPenaltyModal
+    v-model:open="showPenaltyModal"
+    :payment-id="paymentId"
+    :monthly-amount="payment?.leaseContract?.monthlyPayment ?? 0"
+  />
   <ConfirmationModal
     v-model:open="showDeleteConfirmationtModal"
     title="Confirm Payment"
     message="Are you sure you want to confirm this payment? This action cannot be undone."
     confirm-text="Confirm"
     confirm-color="success"
-    :loading="isLoading"
+    :loading="confirmStatus === 'loading'"
     @confirm="confirm"
   />
 </template>
