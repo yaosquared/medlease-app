@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useQuery } from '@pinia/colada'
 
 import { getAdminDashboardStats } from '@/apis/dashboard'
 import { getOwnUsers } from '@/apis/users'
 import { getContracts } from '@/apis/contracts'
 import { getPayments } from '@/apis/payments'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const { isClinic } = storeToRefs(useAuthStore())
 
 const { data: statsData, asyncStatus: statsStatus } = useQuery({
   key: () => ['dashboard'],
@@ -76,41 +79,48 @@ const getPaymentStatusBadge = (status: number) => {
   }
 }
 
-const stats = computed(() => [
-  {
-    label: 'Total Users',
-    value: statsData.value?.data?.totalUsers ?? 0,
-    icon: 'i-lucide-users',
-    color: 'text-violet-500',
-    bg: 'bg-violet-50 dark:bg-violet-950',
-  },
-  {
-    label: 'Active Contracts',
-    value: statsData.value?.data?.activeContracts ?? 0,
-    icon: 'i-lucide-file-text',
-    color: 'text-blue-500',
-    bg: 'bg-blue-50 dark:bg-blue-950',
-  },
-  {
-    label: 'Pending Payments',
-    value: statsData.value?.data?.pendingPayments ?? 0,
-    icon: 'i-lucide-credit-card',
-    color: 'text-amber-500',
-    bg: 'bg-amber-50 dark:bg-amber-950',
-  },
-  {
-    label: 'Total Equipment',
-    value: statsData.value?.data?.totalEquipment ?? 0,
-    icon: 'i-lucide-monitor',
-    color: 'text-emerald-500',
-    bg: 'bg-emerald-50 dark:bg-emerald-950',
-  },
-])
+const stats = computed(() => {
+  const all = [
+    {
+      label: 'Total Users',
+      value: statsData.value?.data?.totalUsers ?? 0,
+      icon: 'i-lucide-users',
+      color: 'text-violet-500',
+      bg: 'bg-violet-50 dark:bg-violet-950',
+    },
+    {
+      label: 'Active Contracts',
+      value: statsData.value?.data?.activeContracts ?? 0,
+      icon: 'i-lucide-file-text',
+      color: 'text-blue-500',
+      bg: 'bg-blue-50 dark:bg-blue-950',
+    },
+    {
+      label: 'Pending Payments',
+      value: statsData.value?.data?.pendingPayments ?? 0,
+      icon: 'i-lucide-credit-card',
+      color: 'text-amber-500',
+      bg: 'bg-amber-50 dark:bg-amber-950',
+    },
+    ...(!isClinic.value
+      ? [
+          {
+            label: 'Total Equipment',
+            value: statsData.value?.data?.totalEquipment ?? 0,
+            icon: 'i-lucide-monitor',
+            color: 'text-emerald-500',
+            bg: 'bg-emerald-50 dark:bg-emerald-950',
+          },
+        ]
+      : []),
+  ]
+  return all
+})
 </script>
 
 <template>
   <div class="h-full flex flex-col gap-6">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 gap-4" :class="isClinic ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
       <template v-if="isLoading">
         <USkeleton v-for="i in 4" :key="i" class="h-28 rounded-xl" />
       </template>

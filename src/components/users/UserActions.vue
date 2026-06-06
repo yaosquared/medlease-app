@@ -16,7 +16,7 @@ const props = defineProps<{
   role?: number
 }>()
 
-const { isOrgAdmin } = storeToRefs(useAuthStore())
+const { isOrgAdmin, user } = storeToRefs(useAuthStore())
 const toast = useToast()
 const queryCache = useQueryCache()
 
@@ -63,6 +63,7 @@ const { mutate: deactivate, asyncStatus: deactivateStatus } = useMutation({
       Edit
     </UButton>
     <UButton
+      v-if="user?.id !== id"
       size="sm"
       color="error"
       icon="i-lucide-ban"

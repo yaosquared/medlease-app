@@ -1,9 +1,9 @@
-export const EQUIPMENTS_PER_PAGE = 12
+export const EQUIPMENTS_PER_PAGE = 10
 
 export const STATUS_OPTIONS = [
   { label: 'All', value: null },
   { label: 'Available', value: 0 },
-  { label: 'Under Review', value: 1 },
+  // { label: 'Under Review', value: 1 },
   { label: 'Leased', value: 2 },
   { label: 'Under Maintenance', value: 3 },
   { label: 'Retired', value: 4 },
@@ -33,7 +33,6 @@ export const CONDITION_INPUT_OPTIONS = [
 
 export const STATUS_INPUT_OPTIONS = [
   { label: 'Available', value: 0 },
-  { label: 'Leased', value: 2 },
   { label: 'Under Maintenance', value: 3 },
   { label: 'Retired', value: 4 },
 ]

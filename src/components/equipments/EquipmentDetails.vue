@@ -147,9 +147,15 @@ const onDelete = () => {
         >
           Delete
         </UButton>
-        <!-- NOTE: show button only if the user is an OrgAdmin or Staff, from Vendor org, and equipment status is available -->
+        <!-- NOTE: show button only if the user is an OrgAdmin or Staff, from Vendor org, equipment status is available and not under maintenance or retired -->
         <UButton
-          v-if="isClinic && (isOrgAdmin || isStaff) && equipment?.status === 0"
+          v-if="
+            isClinic &&
+            (isOrgAdmin || isStaff) &&
+            equipment?.status === 0 &&
+            equipment?.status !== 3 &&
+            equipment?.status !== 4
+          "
           size="sm"
           color="primary"
           icon="i-lucide-file-text"
@@ -177,7 +183,13 @@ const onDelete = () => {
     @confirm="onDelete"
   />
   <CreateContractModal
-    v-if="isClinic && (isOrgAdmin || isStaff) && equipment?.status === 0"
+    v-if="
+      isClinic &&
+      (isOrgAdmin || isStaff) &&
+      equipment?.status === 0 &&
+      equipment?.status !== 3 &&
+      equipment?.status !== 4
+    "
     v-model:open="showLeaseContractModal"
     :equipment-id="equipmentId"
   />
