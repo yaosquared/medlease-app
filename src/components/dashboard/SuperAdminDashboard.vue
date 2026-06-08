@@ -61,7 +61,7 @@ const getRoleBadge = (role: number) => {
     case 1:
       return { label: 'Org Admin', color: 'warning' as const }
     case 2:
-      return { label: 'Staff', color: 'neutral' as const }
+      return { label: 'Staff', color: 'info' as const }
     default:
       return { label: 'Viewer', color: 'neutral' as const }
   }

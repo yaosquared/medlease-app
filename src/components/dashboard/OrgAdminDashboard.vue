@@ -43,7 +43,7 @@ const getRoleBadge = (role: number) => {
     case 1:
       return { label: 'Org Admin', color: 'warning' as const }
     case 2:
-      return { label: 'Staff', color: 'neutral' as const }
+      return { label: 'Staff', color: 'info' as const }
     default:
       return { label: 'Viewer', color: 'neutral' as const }
   }
@@ -122,7 +122,7 @@ const stats = computed(() => {
   <div class="h-full flex flex-col gap-6">
     <div class="grid grid-cols-2 gap-4" :class="isClinic ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
       <template v-if="isLoading">
-        <USkeleton v-for="i in 4" :key="i" class="h-28 rounded-xl" />
+        <USkeleton v-for="i in isClinic ? 3 : 4" :key="i" class="h-28 rounded-xl" />
       </template>
       <template v-else>
         <UCard v-for="stat in stats" :key="stat.label">

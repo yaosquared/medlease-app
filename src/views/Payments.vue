@@ -95,12 +95,8 @@ const getStatusBadge = (status: number) => {
   switch (status) {
     case 0:
       return { label: 'Pending', color: 'warning' as const }
-    // case 1:
-    //   return { label: 'Processing', color: 'info' as const }
-    case 2:
+    case 1:
       return { label: 'Paid', color: 'success' as const }
-    case 3:
-      return { label: 'Overdue', color: 'error' as const }
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }

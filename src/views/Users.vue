@@ -95,11 +95,15 @@ const getRoleBadge = (status: number) => {
     case 1:
       return { label: 'Org Admin', color: 'warning' as const }
     case 2:
-      return { label: 'Staff', color: 'neutral' as const }
+      return { label: 'Staff', color: 'info' as const }
     default:
       return { label: 'Viewer', color: 'neutral' as const }
   }
 }
+
+const roleFilterOptions = computed(() =>
+  isSuperAdmin.value ? ROLE_OPTIONS : ROLE_OPTIONS.filter((o) => o.value !== 0),
+)
 
 const onRoleChange = (value: number | null) => {
   roleFilter.value = value === null ? null : Number(value)
@@ -132,7 +136,7 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
           />
           <USelect
             :model-value="roleFilter"
-            :items="ROLE_OPTIONS"
+            :items="roleFilterOptions"
             value-key="value"
             placeholder="Filter by role"
             class="w-48 cursor-pointer"

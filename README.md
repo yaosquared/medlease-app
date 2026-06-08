@@ -6,21 +6,18 @@ A web application for managing medical equipment leasing operations — handling
 
 ## Tech Stack
 
-| Tool          | Version | Purpose                    |
-| ------------- | ------- | -------------------------- |
-| Vue 3         | ^3.5    | UI framework               |
-| Vite          | ^8.0    | Build tool & dev server    |
-| Vue Router    | ^5.0    | Client-side routing        |
-| Pinia         | ^3.0    | State management           |
-| @pinia/colada | ^1.3    | Async query/mutation layer |
-| @nuxt/ui      | ^4.8    | UI component library       |
-| Tailwind CSS  | ^4.3    | Utility-first styling      |
-| Reka UI       | ^2.9    | Headless UI primitives     |
-| Axios         | ^1.16   | HTTP client                |
-| Zod           | ^4.4    | Schema validation          |
-| jwt-decode    | ^4.0    | JWT token parsing          |
-| VueUse        | ^14.3   | Composable utilities       |
-| TypeScript    | ~6.0    | Type safety                |
+| Tool         | Version | Purpose                    |
+| ------------ | ------- | -------------------------- |
+| Vue 3        | ^3.5    | UI framework               |
+| Vite         | ^8.0    | Build tool & dev server    |
+| Vue Router   | ^5.0    | Client-side routing        |
+| Pinia        | ^3.0    | State management           |
+| Pinia Colada | ^1.3    | Async query/mutation layer |
+| Nuxt UI      | ^4.8    | UI component library       |
+| Tailwind CSS | ^4.3    | Utility-first styling      |
+| Axios        | ^1.16   | HTTP client                |
+| Zod          | ^4.4    | Schema validation          |
+| TypeScript   | ~6.0    | Type safety                |
 
 ## Requirements
 
@@ -31,7 +28,7 @@ A web application for managing medical equipment leasing operations — handling
 Create a `.env` file at the project root:
 
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=https://localhost:7098
 
 ```
 
@@ -57,12 +54,6 @@ pnpm dev
 pnpm build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
-
 ## Pages & Routing
 
 ### Public (no login required)
@@ -74,31 +65,48 @@ pnpm lint
 
 ### Super Admin
 
-| Route                | Description                                             |
-| -------------------- | ------------------------------------------------------- |
-| `/dashboard`         | Overview stats (orgs, approvals, leases, payments)      |
-| `/organizations`     | All orgs with tabs: All / Pending / Verified / Rejected |
-| `/organizations/:id` | Org detail — approve or reject with reason              |
-| `/users`             | All users across all organizations                      |
-| `/profile`           | View/edit own profile, change password                  |
+| Route                | Description                                                      |
+| -------------------- | ---------------------------------------------------------------- |
+| `/dashboard`         | Overview stats (organizations, approvals, leases, payments)      |
+| `/organizations`     | All organizations with tabs: All / Pending / Verified / Rejected |
+| `/organizations/:id` | Organization detail — approve or reject with reason              |
+| `/users`             | All users across all organizations                               |
+| `/profile`           | View/edit own profile, change password                           |
 
 ### OrgAdmin (Vendor & Clinic)
 
 | Route           | Description                                                      |
 | --------------- | ---------------------------------------------------------------- |
-| `/dashboard`    | Org-scoped stats (leases, payments, equipment)                   |
-| `/organization` | View/edit own org info                                           |
+| `/dashboard`    | Organization-scoped stats (leases, payments, equipment)          |
+| `/organization` | View/edit own organization info                                  |
 | `/users`        | Users in own org — add Staff/Viewer, deactivate                  |
-| `/equipment`    | _(Vendor only)_ List, add, edit equipment                        |
+| `/equipments`   | _(Vendor only)_ List, add, edit equipment                        |
 | `/contracts`    | Contracts — approve/complete (Vendor) or create request (Clinic) |
 | `/payments`     | Payments — confirm received (Vendor)                             |
 | `/profile`      | View/edit own profile, change password                           |
+
+### Staff (Vendor & Clinic)
+
+| Route         | Description                                                                   |
+| ------------- | ----------------------------------------------------------------------------- |
+| `/dashboard`  | Org-scoped stats (contracts, payments, equipment)                             |
+| `/equipments` | Equipment list — add/edit (Vendor Staff); browse/lease request (Clinic Staff) |
+| `/contracts`  | View contracts and history (read-only for both Staff roles)                   |
+| `/payments`   | View payments (Vendor Staff); record payment (Clinic Staff)                   |
+| `/profile`    | View/edit own profile, change password                                        |
+
+### Viewer
+
+| Route         | Description                           |
+| ------------- | ------------------------------------- |
+| `/dashboard`  | Landing page (no content widgets)     |
+| `/equipments` | Browse and view equipment (read-only) |
 
 ## Authentication
 
 The app uses JWT-based auth with access + refresh tokens.
 
-- Access token is stored in memory (Pinia store).
-- Refresh token is persisted (cookie or localStorage) and used via `POST /api/auth/refresh`.
-- Axios interceptors handle automatic token refresh on 401 responses.
-- Route guards in Vue Router enforce role-based access (SuperAdmin / OrgAdmin / Staff / Viewer).
+- Access token is stored in the Pinia auth store (in memory).
+- Refresh token is used via `POST /api/auth/refresh` to obtain a new access token.
+- Axios request interceptors automatically attach the JWT Bearer token to every request.
+- Vue Router navigation guards enforce role-based access (`SuperAdmin` / `OrgAdmin` / `Staff` / `Viewer`) using route metadata (`requiresAuth`, `roles[]`).
