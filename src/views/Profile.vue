@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 
 import { useProfileStore } from '@/stores/profile'
 import { useAuthStore } from '@/stores/auth'
-import avatar from '@/assets/avatar.png'
 import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue'
 
 const { profile } = storeToRefs(useProfileStore())
@@ -26,7 +25,13 @@ const ROLE_LABELS: { value: number; label: string }[] = [
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <UAvatar :src="avatar" size="xl" />
+          <UAvatar
+            :src="
+              profile?.imageUrl ??
+              'https://res.cloudinary.com/dybrrnkfo/image/upload/v1781182376/avatar_nfzgcd.png'
+            "
+            size="xl"
+          />
           <div>
             <h2 class="text-lg font-semibold">{{ profile?.fullName }}</h2>
             <UBadge

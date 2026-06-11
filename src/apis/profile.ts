@@ -7,7 +7,19 @@ export const getProfile = async () => {
 }
 
 export const updateProfile = async (payload: TEditProfileSchema) => {
-  const res = await api.put(`/api/profile`, payload)
+  const formData = new FormData()
+
+  if (payload.image) {
+    formData.append('image', payload.image)
+  }
+
+  formData.append('fullName', payload.fullName ?? '')
+  formData.append('username', payload.username.toString())
+  formData.append('contactNumber', payload.contactNumber.toString())
+
+  const res = await api.put(`/api/profile`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
   return res.data
 }
 

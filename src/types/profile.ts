@@ -1,5 +1,6 @@
 export type TProfileResponse = {
   id: string
+  imageUrl: string | null
   fullName: string
   username: string
   email: string

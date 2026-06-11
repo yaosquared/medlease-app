@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export const editProfileSchema = z.object({
+  image: z.instanceof(File).optional(),
   fullName: z.string().min(1, 'Full name is required'),
   username: z.string().min(1, 'Username is required'),
   contactNumber: z.string().min(1, 'Contact number is required'),

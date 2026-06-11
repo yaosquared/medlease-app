@@ -7,7 +7,6 @@ import type { BreadcrumbItem, DropdownMenuItem, NavigationMenuItem } from '@nuxt
 
 import { useAuthStore } from '@/stores/auth'
 import { useProfileStore } from '@/stores/profile'
-import avatar from '@/assets/avatar.png'
 
 const router = useRouter()
 const route = useRoute()
@@ -59,7 +58,9 @@ const navItems = computed<NavigationMenuItem[]>(() => {
 const userDetail = computed(() => ({
   name: profile.value?.fullName || '',
   avatar: {
-    src: avatar,
+    src:
+      profile.value?.imageUrl ||
+      'https://res.cloudinary.com/dybrrnkfo/image/upload/v1781182376/avatar_nfzgcd.png',
     alt: 'User profile image',
   },
 }))

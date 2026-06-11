@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useMutation, useQueryCache } from '@pinia/colada'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { AxiosError } from 'axios'
@@ -22,7 +22,10 @@ const open = defineModel<boolean>('open')
 const toast = useToast()
 const queryCache = useQueryCache()
 
-const state = reactive({
+const hovered = ref(false)
+
+const state = reactive<TUpdateEquipmentSchema>({
+  image: undefined,
   imageUrl: '',
   description: '',
   monthlyRate: 0,
@@ -50,6 +53,7 @@ watch(
   () => open.value,
   (isOpen) => {
     if (isOpen && props.equipment) {
+      state.image = undefined
       state.imageUrl = props.equipment.imageUrl ?? ''
       state.description = props.equipment.description ?? ''
       state.monthlyRate = props.equipment.monthlyRate ?? 0
@@ -77,8 +81,33 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         class="flex flex-col gap-4"
         @submit="onSubmit"
       >
-        <UFormField label="Image URL" name="imageUrl">
-          <UInput v-model="state.imageUrl" class="w-full" />
+        <UFormField label="Image" name="image">
+          <div
+            class="relative"
+            :class="{ 'cursor-pointer': hovered && !state.image && state.imageUrl }"
+            @mouseenter="hovered = true"
+            @mouseleave="hovered = false"
+          >
+            <UFileUpload
+              v-model="state.image"
+              accept="image/*"
+              label="Click or drag image here"
+              description="PNG, JPG, WEBP (max 5MB)"
+              class="w-full"
+            />
+            <div
+              v-if="!state.image && state.imageUrl"
+              class="absolute inset-0 rounded-lg overflow-hidden pointer-events-none"
+            >
+              <img :src="state.imageUrl" alt="Current image" class="w-full h-full object-cover" />
+              <div
+                class="absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity"
+                :class="hovered ? 'opacity-100' : 'opacity-0'"
+              >
+                <UIcon name="i-lucide-pencil" class="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
         </UFormField>
         <UFormField label="Description" name="description">
           <UTextarea v-model="state.description" class="w-full" />

@@ -8,7 +8,7 @@ import type { AxiosError } from 'axios'
 import { createEquipment } from '@/apis/equipments'
 import { CONDITION_INPUT_OPTIONS } from '@/constants/equipments'
 import { createEquipmentSchema } from '@/schemas/equipment'
-import type { TCreateEquipmentSchema } from '@/schemas/equipment'
+import type { TCreateEquipmentForm, TCreateEquipmentSchema } from '@/schemas/equipment'
 import type { TApiErrorResponse } from '@/types/api'
 import { getApiErrorMessages } from '@/utils/errors'
 
@@ -18,8 +18,8 @@ const toast = useToast()
 const router = useRouter()
 const queryCache = useQueryCache()
 
-const initialState = {
-  imageUrl: '',
+const initialState: TCreateEquipmentForm = {
+  image: undefined,
   name: '',
   brand: '',
   model: '',
@@ -27,9 +27,8 @@ const initialState = {
   description: '',
   monthlyRate: 0,
   condition: 0,
-  status: 0,
 }
-const state = reactive({ ...initialState })
+const state = reactive<TCreateEquipmentForm>({ ...initialState })
 
 const { mutate, asyncStatus, error } = useMutation({
   mutation: (payload: TCreateEquipmentSchema) => createEquipment(payload),
@@ -67,10 +66,12 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         class="flex flex-col gap-4"
         @submit="onSubmit"
       >
-        <UFormField label="Image URL" name="imageUrl">
-          <UInput
-            v-model="state.imageUrl"
-            placeholder="https://example.com/image.jpg"
+        <UFormField label="Image" name="image">
+          <UFileUpload
+            v-model="state.image"
+            accept="image/*"
+            label="Click or drag image here"
+            description="PNG, JPG, WEBP (max 5MB)"
             class="w-full"
           />
         </UFormField>
