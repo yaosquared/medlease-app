@@ -84,6 +84,16 @@ watch(open, (val) => {
   }
 })
 
+const initialPaymentAmount = (startDate: string, endDate: string, monthlyPayment: number) => {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  const totalMonths =
+    (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth()
+
+  return monthlyPayment * totalMonths
+}
+
 const isLoading = computed(() => asyncStatus.value === 'loading')
 const hasErrors = computed(() => !createPaymentSchema.safeParse(state).success)
 const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.value) : null))
@@ -120,22 +130,36 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             Payment summary
           </p>
           <div class="grid grid-cols-2 gap-x-4 gap-y-3 p-4">
-            <div>
+            <div class="col-span-2">
               <p class="text-dimmed text-xs mb-0.5">Contract</p>
               <p class="font-medium font-mono">{{ selectedContract.label }}</p>
             </div>
             <div>
-              <p class="text-dimmed text-xs mb-0.5">Monthly amount</p>
+              <p class="text-dimmed text-xs mb-0.5">Monthly Amount</p>
               <p class="font-semibold text-primary text-base">
                 {{ formatCurrency(selectedContract.monthlyPayment) }}
               </p>
             </div>
             <div>
-              <p class="text-dimmed text-xs mb-0.5">Start date</p>
+              <p class="text-dimmed text-xs mb-0.5">Base Payment Amount</p>
+              <p class="font-semibold text-primary text-base">
+                {{
+                  formatCurrency(
+                    initialPaymentAmount(
+                      selectedContract.startDate,
+                      selectedContract.endDate,
+                      selectedContract.monthlyPayment,
+                    ),
+                  )
+                }}
+              </p>
+            </div>
+            <div>
+              <p class="text-dimmed text-xs mb-0.5">Start Date</p>
               <p class="font-medium">{{ formatDate(selectedContract.startDate) }}</p>
             </div>
             <div>
-              <p class="text-dimmed text-xs mb-0.5">End date</p>
+              <p class="text-dimmed text-xs mb-0.5">End Date</p>
               <p class="font-medium">{{ formatDate(selectedContract.endDate) }}</p>
             </div>
           </div>

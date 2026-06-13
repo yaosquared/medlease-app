@@ -66,7 +66,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         class="flex flex-col gap-4"
         @submit="onSubmit"
       >
-        <UFormField label="Image" name="image">
+        <UFormField label="Image" name="image" class="cursor-pointer">
           <UFileUpload
             v-model="state.image"
             accept="image/*"
