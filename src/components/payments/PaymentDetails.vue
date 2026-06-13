@@ -113,7 +113,7 @@ const statusBadge = computed(() => {
             <p class="font-medium">{{ payment.paymentMethod }}</p>
           </div>
           <div>
-            <p class="text-dimmed">Amount</p>
+            <p class="text-dimmed">Base amount</p>
             <p class="font-semibold text-primary">{{ formatCurrency(payment.amount) }}</p>
           </div>
           <div class="col-span-2">
@@ -145,7 +145,19 @@ const statusBadge = computed(() => {
             </p>
           </div>
           <div>
-            <p class="text-dimmed">Due date</p>
+            <p class="text-dimmed">Start date</p>
+            <p class="font-medium">{{ formatDate(payment.leaseContract.startDate) }}</p>
+          </div>
+          <div>
+            <p class="text-dimmed">End date</p>
+            <p class="font-medium">{{ formatDate(payment.leaseContract.endDate) }}</p>
+          </div>
+          <div>
+            <p class="text-dimmed">Created at</p>
+            <p class="font-medium">{{ formatDate(payment.createdAt) }}</p>
+          </div>
+          <div>
+            <p class="t ext-dimmed">Due date</p>
             <p
               class="font-medium"
               :class="{ 'text-red-500': new Date(payment.dueDate) < new Date() }"
@@ -156,10 +168,6 @@ const statusBadge = computed(() => {
           <div>
             <p class="text-dimmed">Paid at</p>
             <p class="font-medium">{{ formatDate(payment.paidAt) }}</p>
-          </div>
-          <div>
-            <p class="text-dimmed">Created at</p>
-            <p class="font-medium">{{ formatDate(payment.createdAt) }}</p>
           </div>
           <div v-if="payment.remarks" class="col-span-2">
             <p class="text-dimmed">Remarks</p>
@@ -242,6 +250,8 @@ const statusBadge = computed(() => {
     v-model:open="showPenaltyModal"
     :payment-id="paymentId"
     :monthly-amount="payment?.leaseContract?.monthlyPayment ?? 0"
+    :start-date="payment?.leaseContract?.startDate ?? ''"
+    :end-date="payment?.leaseContract?.endDate ?? ''"
   />
   <ConfirmationModal
     v-model:open="showDeleteConfirmationtModal"

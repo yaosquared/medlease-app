@@ -16,6 +16,8 @@ const open = defineModel<boolean>('open')
 const props = defineProps<{
   paymentId: string
   monthlyAmount: number
+  startDate: string
+  endDate: string
 }>()
 
 const toast = useToast()
@@ -63,6 +65,16 @@ const onSubmit = (payload: FormSubmitEvent<TAddPenaltySchema>) => {
 watch(open, (val) => {
   if (!val) resetForm()
 })
+
+const initialPaymentAmount = (penaltyAmount: number) => {
+  const start = new Date(props.startDate)
+  const end = new Date(props.endDate)
+
+  const totalMonths =
+    (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth()
+
+  return props.monthlyAmount * totalMonths + penaltyAmount
+}
 
 const isLoading = computed(() => asyncStatus.value === 'loading')
 const hasErrors = computed(() => !addPenaltySchema.safeParse(state).success)
@@ -116,7 +128,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             <div class="col-span-2 border-t border-default pt-2">
               <p class="text-dimmed">Total amount</p>
               <p class="font-bold text-primary">
-                {{ formatCurrency(monthlyAmount + penaltyAmount) }}
+                {{ formatCurrency(initialPaymentAmount(penaltyAmount)) }}
               </p>
             </div>
           </div>
