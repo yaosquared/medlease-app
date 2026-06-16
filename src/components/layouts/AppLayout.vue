@@ -2,7 +2,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useColorMode } from '@vueuse/core'
+import { useColorMode, useMediaQuery } from '@vueuse/core'
 import type { BreadcrumbItem, DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 
 import { useAuthStore } from '@/stores/auth'
@@ -15,6 +15,7 @@ const { clearTokens } = useAuthStore()
 const { clearProfile, fetchProfile } = useProfileStore()
 const { user } = storeToRefs(useAuthStore())
 const { profile } = storeToRefs(useProfileStore())
+const isMobile = useMediaQuery('(max-width: 1023px)')
 
 const colorMode = useColorMode()
 const open = ref(true)
@@ -53,7 +54,12 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   const role = user.value?.role ?? ''
   const roleItems = byRole[role] ?? []
 
-  return [...common, ...roleItems]
+  return [...common, ...roleItems].map((item) => ({
+    ...item,
+    onSelect: () => {
+      if (isMobile.value) open.value = false
+    },
+  }))
 })
 
 const userDetail = computed(() => ({
