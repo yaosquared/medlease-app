@@ -77,6 +77,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
       icon: 'i-lucide-user',
       onSelect() {
         router.push('/profile')
+        if (isMobile.value) open.value = false
       },
     },
   ],
@@ -92,6 +93,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           checked: colorMode.value === 'light',
           onUpdateChecked(checked: boolean) {
             if (checked) colorMode.value = 'light'
+            if (isMobile.value) open.value = false
           },
           onSelect(e: Event) {
             e.preventDefault()
@@ -104,6 +106,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           checked: colorMode.value === 'dark',
           onUpdateChecked(checked: boolean) {
             if (checked) colorMode.value = 'dark'
+            if (isMobile.value) open.value = false
           },
           onSelect(e: Event) {
             e.preventDefault()
