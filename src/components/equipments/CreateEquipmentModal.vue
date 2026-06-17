@@ -73,25 +73,52 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             label="Click or drag image here"
             description="PNG, JPG, WEBP (max 5MB)"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <UFormField label="Name" name="name">
-          <UInput v-model="state.name" placeholder="MRI Machine" class="w-full" />
+          <UInput
+            v-model="state.name"
+            placeholder="MRI Machine"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <div class="grid grid-cols-2 gap-4">
           <UFormField label="Brand" name="brand">
-            <UInput v-model="state.brand" placeholder="Siemens" class="w-full" />
+            <UInput
+              v-model="state.brand"
+              placeholder="Siemens"
+              class="w-full"
+              :ui="{ base: 'text-sm' }"
+            />
           </UFormField>
           <UFormField label="Model" name="model">
-            <UInput v-model="state.model" placeholder="MAGNETOM Altea" class="w-full" />
+            <UInput
+              v-model="state.model"
+              placeholder="MAGNETOM Altea"
+              class="w-full"
+              :ui="{ base: 'text-sm' }"
+            />
           </UFormField>
         </div>
         <UFormField label="Serial Number" name="serialNumber">
-          <UInput v-model="state.serialNumber" placeholder="SN-2024-001" class="w-full" />
+          <UInput
+            v-model="state.serialNumber"
+            placeholder="SN-2024-001"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <div class="grid grid-cols-2 gap-4">
           <UFormField label="Monthly Rate (PHP)" name="monthlyRate">
-            <UInput v-model.number="state.monthlyRate" type="number" min="0" class="w-full" />
+            <UInput
+              v-model.number="state.monthlyRate"
+              type="number"
+              min="0"
+              class="w-full"
+              :ui="{ base: 'text-sm' }"
+            />
           </UFormField>
           <UFormField label="Condition" name="condition">
             <USelect
@@ -99,6 +126,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
               :items="CONDITION_INPUT_OPTIONS"
               value-key="value"
               class="w-full"
+              :ui="{ base: 'text-sm' }"
             />
           </UFormField>
         </div>
@@ -107,6 +135,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             v-model="state.description"
             placeholder="Optional description"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />

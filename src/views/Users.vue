@@ -3,6 +3,7 @@ import { ref, computed, h, resolveComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useQuery } from '@pinia/colada'
+import { useMediaQuery } from '@vueuse/core'
 import type { TableColumn, TableRow } from '@nuxt/ui'
 
 import { getOwnUsers, getUsers } from '@/apis/users'
@@ -13,6 +14,7 @@ import type { TUser } from '@/types/users'
 const { isSuperAdmin, isOrgAdmin } = storeToRefs(useAuthStore())
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
+const isMobile = useMediaQuery('(max-width: 425px)')
 
 const page = ref(1)
 const searchQuery = ref('')
@@ -121,11 +123,11 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
       Failed to load users
     </div>
     <div v-else class="flex flex-col gap-4">
-      <div class="flex justify-between items-center gap-2">
-        <div class="w-1/2 flex gap-2">
+      <div class="flex flex-col md:flex-row md:justify-between items-center gap-2">
+        <div class="w-full md:w-1/2 flex flex-col md:flex-row gap-2">
           <SearchBar
             v-model="searchQuery"
-            class="max-w-sm"
+            class="md:max-w-sm"
             placeholder="Search for full name / username..."
             @search="
               (val) => {
@@ -134,17 +136,27 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
               }
             "
           />
-          <USelect
-            :model-value="roleFilter"
-            :items="roleFilterOptions"
-            value-key="value"
-            placeholder="Filter by role"
-            class="w-48 cursor-pointer"
-            @update:model-value="onRoleChange"
-          />
+          <div class="flex gap-2">
+            <USelect
+              :model-value="roleFilter"
+              :items="roleFilterOptions"
+              value-key="value"
+              placeholder="Filter by role"
+              :class="['cursor-pointer', isSuperAdmin ? 'w-full' : 'w-48']"
+              @update:model-value="onRoleChange"
+            />
+            <UButton
+              v-if="isMobile && isOrgAdmin"
+              icon="i-lucide-plus"
+              class="w-1/2 flex justify-center cursor-pointer ml-auto"
+              @click="showCreateUserModal = true"
+            >
+              Add User
+            </UButton>
+          </div>
         </div>
         <UButton
-          v-if="isOrgAdmin"
+          v-if="!isMobile && isOrgAdmin"
           icon="i-lucide-plus"
           class="cursor-pointer ml-auto"
           @click="showCreateUserModal = true"
@@ -153,13 +165,15 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
         </UButton>
       </div>
       <div class="flex flex-col gap-4">
-        <UTable
-          :data="rows"
-          :columns="usersColumns"
-          :loading="asyncStatus === 'loading'"
-          class="flex-1 cursor-pointer"
-          @select="goToDetails"
-        />
+        <div class="w-[calc(100vw-2rem)] md:w-auto overflow-x-auto">
+          <UTable
+            :data="rows"
+            :columns="usersColumns"
+            :loading="asyncStatus === 'loading'"
+            class="cursor-pointer"
+            @select="goToDetails"
+          />
+        </div>
         <Pagination v-model:page="page" :total="total" :items-per-page="USERS_PER_PAGE" />
       </div>
     </div>

@@ -112,11 +112,11 @@ const onStatusChange = (value: number | null) => {
       Failed to load users
     </div>
     <div v-else class="flex flex-col gap-4">
-      <div class="flex items-center gap-2">
+      <div class="flex flex-col md:flex-row items-center gap-2">
         <SearchBar
           v-model="searchQuery"
           placeholder="Search for contract reference..."
-          class="max-w-sm"
+          class="md:max-w-sm"
           @search="
             (val) => {
               debouncedSearch = val
@@ -129,17 +129,19 @@ const onStatusChange = (value: number | null) => {
           :items="STATUS_OPTIONS"
           value-key="value"
           placeholder="Filter by role"
-          class="w-48 cursor-pointer"
+          class="w-full md:w-48 cursor-pointer"
           @update:model-value="onStatusChange"
         />
       </div>
-      <UTable
-        :data="rows"
-        :columns="usersColumns"
-        :loading="asyncStatus === 'loading'"
-        class="flex-1 cursor-pointer"
-        @select="goToDetails"
-      />
+      <div class="w-[calc(100vw-2rem)] md:w-auto overflow-x-auto">
+        <UTable
+          :data="rows"
+          :columns="usersColumns"
+          :loading="asyncStatus === 'loading'"
+          class="cursor-pointer"
+          @select="goToDetails"
+        />
+      </div>
       <Pagination v-model:page="page" :total="total" :items-per-page="CONTRACTS_PER_PAGE" />
     </div>
   </div>

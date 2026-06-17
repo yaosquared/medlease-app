@@ -64,7 +64,7 @@ const orgStatusBadge = computed(() => {
   <USkeleton v-if="asyncStatus === 'loading'" class="h-64 w-full" />
   <UCard v-else-if="org">
     <template #header>
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
         <div>
           <h2 class="text-lg font-semibold">{{ org.fullName }} ({{ org.username }})</h2>
           <p class="text-sm text-dimmed">{{ org.email }}</p>
@@ -95,7 +95,7 @@ const orgStatusBadge = computed(() => {
     </div>
     <USeparator class="my-4" />
     <div v-if="org.organization" class="space-y-4">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
         <p class="text-xs font-semibold uppercase tracking-wider text-dimmed">
           Organization Details
         </p>
@@ -111,7 +111,9 @@ const orgStatusBadge = computed(() => {
         </div>
         <div>
           <p class="text-dimmed">Email</p>
-          <p class="font-medium">{{ org.organization.email }}</p>
+          <p class="font-medium break-all">
+            {{ org.organization.email }}
+          </p>
         </div>
         <div>
           <p class="text-dimmed">Contact Number</p>

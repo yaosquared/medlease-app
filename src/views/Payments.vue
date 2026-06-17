@@ -2,6 +2,7 @@
 import { ref, computed, h, resolveComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuery } from '@pinia/colada'
+import { useMediaQuery } from '@vueuse/core'
 import type { TableColumn, TableRow } from '@nuxt/ui'
 
 import { getPayments } from '@/apis/payments'
@@ -15,9 +16,10 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { formatCurrency, formatDate } from '@/utils/format'
 
-const { isOrgAdmin, isStaff, isClinic } = storeToRefs(useAuthStore())
+const { isOrgAdmin, isStaff, isClinic, isVendor } = storeToRefs(useAuthStore())
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
+const isMobile = useMediaQuery('(max-width: 425px)')
 
 const page = ref(1)
 const searchQuery = ref('')
@@ -118,12 +120,12 @@ const onStatusChange = (value: number | null) => {
       Failed to load payments
     </div>
     <div v-else class="flex flex-col gap-4">
-      <div class="flex justify-between items-center gap-2">
-        <div class="w-1/2 flex gap-2">
+      <div class="flex flex-col md:flex-row md:justify-between items-center gap-2">
+        <div class="w-full md:w-1/2 flex flex-col md:flex-row gap-2">
           <SearchBar
             v-model="searchQuery"
             placeholder="Search for payment reference..."
-            class="max-w-sm"
+            class="md:max-w-sm"
             @search="
               (val) => {
                 debouncedSearch = val
@@ -131,17 +133,27 @@ const onStatusChange = (value: number | null) => {
               }
             "
           />
-          <USelect
-            :model-value="statusFilter"
-            :items="PAYMENT_STATUS_OPTIONS"
-            value-key="value"
-            placeholder="Filter by status"
-            class="w-48 cursor-pointer"
-            @update:model-value="onStatusChange"
-          />
+          <div class="flex gap-2">
+            <USelect
+              :model-value="statusFilter"
+              :items="PAYMENT_STATUS_OPTIONS"
+              value-key="value"
+              placeholder="Filter by status"
+              :class="['w-1/2 md:w-48 cursor-pointer', { 'w-full': isVendor }]"
+              @update:model-value="onStatusChange"
+            />
+            <UButton
+              icon="i-lucide-plus"
+              v-if="isMobile && isClinic && (isOrgAdmin || isStaff)"
+              class="w-1/2 flex justify-center cursor-pointer ml-auto"
+              @click="showCreatePaymentModal = true"
+            >
+              Add Payment
+            </UButton>
+          </div>
         </div>
         <UButton
-          v-if="isClinic && (isOrgAdmin || isStaff)"
+          v-if="!isMobile && isClinic && (isOrgAdmin || isStaff)"
           icon="i-lucide-plus"
           class="cursor-pointer ml-auto"
           @click="showCreatePaymentModal = true"
@@ -150,19 +162,21 @@ const onStatusChange = (value: number | null) => {
         </UButton>
       </div>
       <div class="flex flex-col gap-4">
-        <UTable
-          :data="rows"
-          :columns="columns"
-          :loading="asyncStatus === 'loading'"
-          class="flex-1 cursor-pointer"
-          @select="goToDetails"
-        />
+        <div class="w-[calc(100vw-2rem)] md:w-auto overflow-x-auto">
+          <UTable
+            :data="rows"
+            :columns="columns"
+            :loading="asyncStatus === 'loading'"
+            class="flex-1 cursor-pointer"
+            @select="goToDetails"
+          />
+        </div>
         <Pagination v-model:page="page" :total="total" :items-per-page="PAYMENTS_PER_PAGE" />
       </div>
     </div>
+    <CreatePaymentModal
+      v-if="isClinic && (isOrgAdmin || isStaff)"
+      v-model:open="showCreatePaymentModal"
+    />
   </div>
-  <CreatePaymentModal
-    v-if="isClinic && (isOrgAdmin || isStaff)"
-    v-model:open="showCreatePaymentModal"
-  />
 </template>

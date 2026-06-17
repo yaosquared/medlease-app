@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useQuery } from '@pinia/colada'
+import { useMediaQuery } from '@vueuse/core'
 
 import { getEquipments } from '@/apis/equipments'
 import {
@@ -14,8 +15,9 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { formatRate } from '@/utils/format'
 
-const { isOrgAdmin, isStaff, isVendor } = storeToRefs(useAuthStore())
+const { isOrgAdmin, isStaff, isVendor, isClinic } = storeToRefs(useAuthStore())
 const router = useRouter()
+const isMobile = useMediaQuery('(max-width: 425px)')
 
 const page = ref(1)
 const searchQuery = ref('')
@@ -49,12 +51,12 @@ const onStatusChange = (value: number | null) => {
       Failed to load equipments
     </div>
     <template v-else>
-      <div class="flex justify-between items-center gap-2 shrink-0">
-        <div class="w-1/2 flex gap-2">
+      <div class="flex flex-col md:flex-row md:justify-between items-center gap-2 shrink-0">
+        <div class="w-full md:w-1/2 flex flex-col md:flex-row gap-2">
           <SearchBar
             v-model="searchQuery"
             placeholder="Search for equipment name..."
-            class="max-w-sm"
+            class="min-w-fit md:max-w-sm"
             @search="
               (val) => {
                 debouncedSearch = val
@@ -62,17 +64,27 @@ const onStatusChange = (value: number | null) => {
               }
             "
           />
-          <USelect
-            :model-value="statusFilter"
-            :items="STATUS_OPTIONS"
-            value-key="value"
-            placeholder="Filter by status"
-            class="w-48 cursor-pointer"
-            @update:model-value="onStatusChange"
-          />
+          <div class="flex gap-2">
+            <USelect
+              :model-value="statusFilter"
+              :items="STATUS_OPTIONS"
+              value-key="value"
+              placeholder="Filter by status"
+              :class="['cursor-pointer', isClinic ? 'w-full md:w-48' : 'w-48']"
+              @update:model-value="onStatusChange"
+            />
+            <UButton
+              v-if="isMobile && isVendor && (isOrgAdmin || isStaff)"
+              icon="i-lucide-plus"
+              class="w-1/2 flex justify-center cursor-pointer ml-auto"
+              @click="showCreateEquipmentModal = true"
+            >
+              Add Equipment
+            </UButton>
+          </div>
         </div>
         <UButton
-          v-if="isVendor && (isOrgAdmin || isStaff)"
+          v-if="!isMobile && isVendor && (isOrgAdmin || isStaff)"
           icon="i-lucide-plus"
           class="cursor-pointer ml-auto"
           @click="showCreateEquipmentModal = true"

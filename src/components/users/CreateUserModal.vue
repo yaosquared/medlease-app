@@ -67,10 +67,20 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         @submit="onSubmit"
       >
         <UFormField label="Full Name" name="fullName">
-          <UInput v-model="state.fullName" placeholder="e.g. Juan dela Cruz" class="w-full" />
+          <UInput
+            v-model="state.fullName"
+            placeholder="e.g. Juan dela Cruz"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Username" name="username">
-          <UInput v-model="state.username" placeholder="e.g. juandc" class="w-full" />
+          <UInput
+            v-model="state.username"
+            placeholder="e.g. juandc"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Email" name="email">
           <UInput
@@ -78,10 +88,16 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             type="email"
             placeholder="e.g. juan@email.com"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <UFormField label="Contact Number" name="contactNumber">
-          <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
+          <UInput
+            v-model="state.contactNumber"
+            placeholder="e.g. 09123456789"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Password" name="password">
           <UInput
@@ -89,6 +105,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :type="showPassword ? 'text' : 'password'"
             placeholder="Min. 8 characters"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           >
             <template #trailing>
               <UButton
@@ -107,6 +124,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :items="ROLE_INPUT_OPTIONS"
             value-key="value"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />

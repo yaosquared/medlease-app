@@ -78,7 +78,12 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         @submit="onSubmit"
       >
         <UFormField label="Name" name="name">
-          <UInput v-model="state.name" placeholder="e.g. St. Luke's" class="w-full" />
+          <UInput
+            v-model="state.name"
+            placeholder="e.g. St. Luke's"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Email" name="email">
           <UInput
@@ -86,6 +91,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             type="email"
             placeholder="e.g. org@email.com"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <UFormField label="Address" name="address">
@@ -93,10 +99,16 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             v-model="state.address"
             placeholder="e.g. Street, City, Province"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <UFormField label="Contact Number" name="contactNumber">
-          <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
+          <UInput
+            v-model="state.contactNumber"
+            placeholder="e.g. 09123456789"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />
         <div class="flex justify-end gap-2">

@@ -28,16 +28,16 @@ watch(selectedTab, (slug) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center gap-4 p-4">
-    <UPageCard class="min-w-sm lg:min-w-md max-w-md">
-      <UTabs :items="TAB_NAV" v-model="selectedTab">
-        <template #content>
-          <div class="mt-10">
-            <LoginForm v-if="selectedTab === 'login'" />
-            <RegisterForm v-else-if="selectedTab === 'register'" />
-          </div>
-        </template>
-      </UTabs>
-    </UPageCard>
-  </div>
+  <!-- <div class="flex flex-col items-center justify-center gap-4 p-4"> -->
+  <UPageCard class="min-w-sm lg:min-w-md max-w-md">
+    <UTabs :items="TAB_NAV" v-model="selectedTab">
+      <template #content>
+        <div class="mt-10">
+          <LoginForm v-if="selectedTab === 'login'" />
+          <RegisterForm v-else-if="selectedTab === 'register'" />
+        </div>
+      </template>
+    </UTabs>
+  </UPageCard>
+  <!-- </div> -->
 </template>

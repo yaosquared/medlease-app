@@ -53,6 +53,7 @@ onBeforeUnmount(() => {
     v-bind="$attrs"
     @keydown.enter="handleSearch"
     @keydown.esc="handleClear"
+    :ui="{ base: 'text-sm' }"
   >
     <template v-if="query" #trailing>
       <UButton

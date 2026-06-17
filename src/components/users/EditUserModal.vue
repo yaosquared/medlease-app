@@ -64,7 +64,12 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         @submit="onSubmit"
       >
         <UFormField label="Contact Number" name="contactNumber">
-          <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
+          <UInput
+            v-model="state.contactNumber"
+            placeholder="e.g. 09123456789"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Role" name="role">
           <USelect
@@ -72,6 +77,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :items="ROLE_INPUT_OPTIONS"
             value-key="value"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />

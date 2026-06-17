@@ -25,7 +25,10 @@ const fields = [
     placeholder: 'Enter your username',
     required: true,
     defaultValue: (route.query.username as string) ?? '',
-    ui: { error: 'text-xs' },
+    ui: {
+      base: 'text-sm',
+      error: 'text-xs',
+    },
   },
   {
     name: 'password',
@@ -33,7 +36,10 @@ const fields = [
     label: 'Password',
     placeholder: 'Enter your password',
     required: true,
-    ui: { error: 'text-xs' },
+    ui: {
+      base: 'text-sm',
+      error: 'text-xs',
+    },
   },
 ]
 

@@ -80,7 +80,9 @@ const goToHistory = () => {
   <USkeleton v-if="asyncStatus === 'loading'" class="h-64 w-full" />
   <UCard v-else-if="contract">
     <template #header>
-      <div class="flex items-start justify-between gap-2">
+      <div
+        class="flex-1 min-w-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-2"
+      >
         <div class="min-w-0">
           <h2 class="text-lg font-semibold">{{ contract.contractNumber }}</h2>
           <p class="text-sm text-dimmed">

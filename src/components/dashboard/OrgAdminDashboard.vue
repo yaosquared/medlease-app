@@ -120,12 +120,16 @@ const stats = computed(() => {
 
 <template>
   <div class="h-full flex flex-col gap-6">
-    <div class="grid grid-cols-2 gap-4" :class="isClinic ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
+    <div class="grid grid-cols-2 gap-4" :class="isClinic ? 'md:grid-cols-3' : 'lg:grid-cols-4'">
       <template v-if="isLoading">
         <USkeleton v-for="i in isClinic ? 3 : 4" :key="i" class="h-28 rounded-xl" />
       </template>
       <template v-else>
-        <UCard v-for="stat in stats" :key="stat.label">
+        <UCard
+          v-for="(stat, index) in stats"
+          :key="stat.label"
+          :class="isClinic && index === stats.length - 1 ? 'col-span-2 md:col-span-1' : ''"
+        >
           <div class="flex items-center gap-4">
             <div :class="[stat.bg, 'p-3 rounded-lg shrink-0']">
               <UIcon :name="stat.icon" :class="[stat.color, 'size-6']" />

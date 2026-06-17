@@ -63,7 +63,10 @@ const statusBadge = computed(() => {
   <USkeleton v-if="asyncStatus === 'loading'" class="h-64 w-full" />
   <UCard v-else-if="payment">
     <template #header>
-      <div class="flex items-start justify-between gap-2">
+      <!-- <div class="flex items-start justify-between gap-2"> -->
+      <div
+        class="flex-1 min-w-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-2"
+      >
         <div class="min-w-0">
           <h2 class="text-lg font-semibold font-mono">{{ payment.transactionReference }}</h2>
           <p class="text-sm text-dimmed">
@@ -212,7 +215,9 @@ const statusBadge = computed(() => {
           <div class="p-3 rounded-lg bg-elevated space-y-1">
             <p class="text-xs text-dimmed uppercase tracking-wide">Lessee (Clinic)</p>
             <p class="font-medium">{{ payment.leaseContract?.lesseeOrganization?.name }}</p>
-            <p class="text-dimmed">{{ payment.leaseContract?.lesseeOrganization?.email }}</p>
+            <p class="text-dimmed break-all">
+              {{ payment.leaseContract?.lesseeOrganization?.email }}
+            </p>
             <p class="text-dimmed">
               {{ payment.leaseContract?.lesseeOrganization?.contactNumber }}
             </p>

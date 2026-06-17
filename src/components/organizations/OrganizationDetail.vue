@@ -53,12 +53,12 @@ const typeBadge = computed(() => {
   <USkeleton v-if="asyncStatus === 'loading'" class="h-64 w-full" />
   <UCard v-else-if="org">
     <template #header>
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
         <div>
           <h2 class="text-lg font-semibold">{{ org.name }}</h2>
           <p class="text-sm text-dimmed">{{ org.email }}</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-row items-center gap-2">
           <UBadge :color="typeBadge.color" variant="subtle">{{ typeBadge.label }}</UBadge>
           <UBadge :color="statusBadge.color" variant="subtle">{{ statusBadge.label }}</UBadge>
         </div>

@@ -117,11 +117,11 @@ const goToDetails = (_e: Event, row: TableRow<TOrganization>) => {
       Failed to load organizations
     </div>
     <div v-else class="flex flex-col gap-4">
-      <div class="flex items-center gap-2">
+      <div class="flex flex-col md:flex-row items-center gap-2">
         <SearchBar
           v-model="searchQuery"
           placeholder="Search for organization name..."
-          class="max-w-sm"
+          class="md:max-w-sm"
           @search="
             (val) => {
               debouncedSearch = val
@@ -134,18 +134,22 @@ const goToDetails = (_e: Event, row: TableRow<TOrganization>) => {
           :items="STATUS_OPTIONS"
           value-key="value"
           placeholder="Filter by status"
-          class="w-48 cursor-pointer"
+          class="w-full md:w-48 cursor-pointer"
           @update:model-value="onStatusChange"
         />
       </div>
-      <UTable
-        :data="rows"
-        :columns="organizationColumns"
-        :loading="asyncStatus === 'loading'"
-        class="flex-1 cursor-pointer"
-        @select="goToDetails"
-      />
-      <Pagination v-model:page="page" :total="total" :items-per-page="ORGS_PER_PAGE" />
+      <div class="flex flex-col gap-4">
+        <div class="w-[calc(100vw-2rem)] md:w-auto overflow-x-auto">
+          <UTable
+            :data="rows"
+            :columns="organizationColumns"
+            :loading="asyncStatus === 'loading'"
+            class="flex-1 cursor-pointer"
+            @select="goToDetails"
+          />
+        </div>
+        <Pagination v-model:page="page" :total="total" :items-per-page="ORGS_PER_PAGE" />
+      </div>
     </div>
   </div>
 </template>

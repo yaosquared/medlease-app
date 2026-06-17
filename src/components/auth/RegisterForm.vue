@@ -68,17 +68,38 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 flex flex-col gap-4">
         <UFormField label="Full Name" name="fullName">
-          <UInput v-model="state.fullName" placeholder="e.g. Juan dela Cruz" class="w-full" />
+          <UInput
+            v-model="state.fullName"
+            placeholder="e.g. Juan dela Cruz"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Username" name="username">
-          <UInput v-model="state.username" placeholder="e.g. juan_dc" class="w-full" />
+          <UInput
+            v-model="state.username"
+            placeholder="e.g. juan_dc"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
       </div>
       <UFormField label="Email" name="email">
-        <UInput v-model="state.email" type="email" placeholder="juan@example.com" class="w-full" />
+        <UInput
+          v-model="state.email"
+          type="email"
+          placeholder="juan@example.com"
+          class="w-full"
+          :ui="{ base: 'text-sm' }"
+        />
       </UFormField>
       <UFormField label="Contact Number" name="contactNumber">
-        <UInput v-model="state.contactNumber" placeholder="09XXXXXXXXX" class="w-full" />
+        <UInput
+          v-model="state.contactNumber"
+          placeholder="09XXXXXXXXX"
+          class="w-full"
+          :ui="{ base: 'text-sm' }"
+        />
       </UFormField>
       <UFormField label="Password" name="password">
         <UInput
@@ -86,6 +107,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
           :type="showPasswords ? 'text' : 'password'"
           placeholder="Min 8 chars"
           class="w-full"
+          :ui="{ base: 'text-sm' }"
         >
           <template #trailing>
             <UButton
@@ -104,6 +126,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
           :type="showPasswords ? 'text' : 'password'"
           placeholder="Re-enter password"
           class="w-full"
+          :ui="{ base: 'text-sm' }"
         >
           <template #trailing>
             <UButton
@@ -117,7 +140,12 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
         </UInput>
       </UFormField>
       <UFormField label="Organization Name" name="orgName">
-        <UInput v-model="state.orgName" placeholder="e.g. St. Luke's" class="w-full" />
+        <UInput
+          v-model="state.orgName"
+          placeholder="e.g. St. Luke's"
+          class="w-full"
+          :ui="{ base: 'text-sm' }"
+        />
       </UFormField>
       <UFormField label="Organization Type" name="orgType">
         <USelect
@@ -125,6 +153,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
           :items="orgType"
           placeholder="Select type"
           class="w-full"
+          :ui="{ base: 'text-sm' }"
         />
       </UFormField>
       <UFormField label="Organization Email" name="orgEmail">
@@ -133,14 +162,25 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
           type="email"
           placeholder="org@example.com"
           class="w-full"
+          :ui="{ base: 'text-sm' }"
         />
       </UFormField>
       <UFormField label="Organization Contact" name="orgContactNumber">
-        <UInput v-model="state.orgContactNumber" placeholder="09XXXXXXXXX" class="w-full" />
+        <UInput
+          v-model="state.orgContactNumber"
+          placeholder="09XXXXXXXXX"
+          class="w-full"
+          :ui="{ base: 'text-sm' }"
+        />
       </UFormField>
 
       <UFormField label="Organization Address" name="address" class="col-span-2">
-        <UInput v-model="state.address" placeholder="Street, City, Province" class="w-full" />
+        <UInput
+          v-model="state.address"
+          placeholder="Street, City, Province"
+          class="w-full"
+          :ui="{ base: 'text-sm' }"
+        />
       </UFormField>
     </div>
     <ApiErrorAlert :messages="errorMessage" />

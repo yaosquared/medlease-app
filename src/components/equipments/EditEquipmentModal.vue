@@ -110,10 +110,16 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
           </div>
         </UFormField>
         <UFormField label="Description" name="description">
-          <UTextarea v-model="state.description" class="w-full" />
+          <UTextarea v-model="state.description" class="w-full" :ui="{ base: 'text-sm' }" />
         </UFormField>
         <UFormField label="Monthly Rate (PHP)" name="monthlyRate">
-          <UInput v-model.number="state.monthlyRate" type="number" min="0" class="w-full" />
+          <UInput
+            v-model.number="state.monthlyRate"
+            type="number"
+            min="0"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Condition" name="condition">
           <USelect
@@ -121,6 +127,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :items="CONDITION_INPUT_OPTIONS"
             value-key="value"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <UFormField label="Status" name="status">
@@ -129,6 +136,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :items="STATUS_INPUT_OPTIONS"
             value-key="value"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />

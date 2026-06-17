@@ -81,8 +81,10 @@ const onDelete = () => {
           />
           <UIcon v-else name="i-lucide-monitor" class="w-10 h-10 text-dimmed" />
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-start justify-between gap-2">
+        <div class="flex-1 min-w-0 h-full">
+          <div
+            class="flex-1 min-w-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-2"
+          >
             <div class="min-w-0">
               <h2 class="text-lg font-semibold truncate">{{ equipment.name }}</h2>
               <p class="text-sm text-dimmed">{{ equipment.brand }} · {{ equipment.model }}</p>
@@ -96,13 +98,16 @@ const onDelete = () => {
               </UBadge>
             </div>
           </div>
-          <p v-if="equipment.description" class="mt-1 text-sm text-dimmed line-clamp-2">
-            {{ equipment.description }}
-          </p>
         </div>
       </div>
     </template>
     <div class="grid grid-cols-2 gap-4 text-sm">
+      <div class="col-span-2">
+        <p class="text-dimmed">Description</p>
+        <p v-if="equipment.description" class="font-medium font-mono">
+          {{ equipment.description }}
+        </p>
+      </div>
       <div>
         <p class="text-dimmed">Serial Number</p>
         <p class="font-medium font-mono">{{ equipment.serialNumber }}</p>
