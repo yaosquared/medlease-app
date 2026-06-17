@@ -67,6 +67,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :type="showPasswords ? 'text' : 'password'"
             placeholder="Enter current password"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           >
             <template #trailing>
               <UButton
@@ -85,6 +86,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :type="showPasswords ? 'text' : 'password'"
             placeholder="Min. 8 characters"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           >
             <template #trailing>
               <UButton
@@ -103,6 +105,7 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
             :type="showPasswords ? 'text' : 'password'"
             placeholder="Re-enter new password"
             class="w-full"
+            :ui="{ base: 'text-sm' }"
           >
             <template #trailing>
               <UButton

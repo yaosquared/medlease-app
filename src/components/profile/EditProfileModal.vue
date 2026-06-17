@@ -114,13 +114,28 @@ const errorMessage = computed(() => (error.value ? getApiErrorMessages(error.val
           </div>
         </UFormField>
         <UFormField label="Full Name" name="fullName">
-          <UInput v-model="state.fullName" placeholder="e.g. Juan dela Cruz" class="w-full" />
+          <UInput
+            v-model="state.fullName"
+            placeholder="e.g. Juan dela Cruz"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Username" name="username">
-          <UInput v-model="state.username" placeholder="e.g. juandc" class="w-full" />
+          <UInput
+            v-model="state.username"
+            placeholder="e.g. juandc"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <UFormField label="Contact Number" name="contactNumber">
-          <UInput v-model="state.contactNumber" placeholder="e.g. 09123456789" class="w-full" />
+          <UInput
+            v-model="state.contactNumber"
+            placeholder="e.g. 09123456789"
+            class="w-full"
+            :ui="{ base: 'text-sm' }"
+          />
         </UFormField>
         <ApiErrorAlert :messages="errorMessage" />
         <div class="flex justify-end gap-2">
