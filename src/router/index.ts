@@ -110,13 +110,13 @@ const router = createRouter({
         title: 'Equipments',
         requiresAuth: true,
         layout: 'app',
-        roles: ['OrgAdmin', 'Staff', 'Viewer'],
+        roles: ['SuperAdmin', 'OrgAdmin', 'Staff', 'Viewer'],
       },
       children: [
         {
           path: '',
           component: Equipments,
-          meta: { roles: ['OrgAdmin', 'Staff', 'Viewer'] },
+          meta: { roles: ['SuperAdmin', 'OrgAdmin', 'Staff', 'Viewer'] },
         },
 
         {
@@ -126,7 +126,7 @@ const router = createRouter({
             title: 'Equipment Details',
             requiresAuth: true,
             layout: 'app',
-            roles: ['OrgAdmin', 'Staff', 'Viewer'],
+            roles: ['SuperAdmin', 'OrgAdmin', 'Staff', 'Viewer'],
           },
         },
       ],
@@ -137,13 +137,13 @@ const router = createRouter({
         title: 'Contracts',
         requiresAuth: true,
         layout: 'app',
-        roles: ['OrgAdmin', 'Staff'],
+        roles: ['SuperAdmin', 'OrgAdmin', 'Staff'],
       },
       children: [
         {
           path: '',
           component: Contracts,
-          meta: { roles: ['OrgAdmin', 'Staff'] },
+          meta: { roles: ['SuperAdmin', 'OrgAdmin', 'Staff'] },
         },
         {
           path: ':contractId',
@@ -151,13 +151,13 @@ const router = createRouter({
             title: 'Contract Details',
             requiresAuth: true,
             layout: 'app',
-            roles: ['OrgAdmin', 'Staff'],
+            roles: ['SuperAdmin', 'OrgAdmin', 'Staff'],
           },
           children: [
             {
               path: '',
               component: ContractDetails,
-              meta: { roles: ['OrgAdmin', 'Staff'] },
+              meta: { roles: ['SuperAdmin', 'OrgAdmin', 'Staff'] },
             },
             {
               path: 'history',
@@ -166,7 +166,7 @@ const router = createRouter({
                 title: 'Contract History',
                 requiresAuth: true,
                 layout: 'app',
-                roles: ['OrgAdmin', 'Staff'],
+                roles: ['SuperAdmin', 'OrgAdmin', 'Staff'],
               },
             },
           ],
@@ -179,13 +179,13 @@ const router = createRouter({
         title: 'Payments',
         requiresAuth: true,
         layout: 'app',
-        roles: ['OrgAdmin', 'Staff'],
+        roles: ['SuperAdmin', 'OrgAdmin', 'Staff'],
       },
       children: [
         {
           path: '',
           component: Payments,
-          meta: { roles: ['OrgAdmin', 'Staff'] },
+          meta: { roles: ['SuperAdmin', 'OrgAdmin', 'Staff'] },
         },
 
         {
@@ -195,7 +195,7 @@ const router = createRouter({
             title: 'Payment Details',
             requiresAuth: true,
             layout: 'app',
-            roles: ['OrgAdmin', 'Staff'],
+            roles: ['SuperAdmin', 'OrgAdmin', 'Staff'],
           },
         },
       ],

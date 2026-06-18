@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useQuery } from '@pinia/colada'
 
 import { getContractHistory } from '@/apis/contracts'
+import { useAuthStore } from '@/stores/auth'
 
+const { isSuperAdmin } = storeToRefs(useAuthStore())
 const route = useRoute()
 const contractId = route.params.contractId as string
 
 const { data, asyncStatus } = useQuery({
-  key: () => ['contract', 'history', contractId],
-  query: () => getContractHistory(contractId),
+  key: () => ['contract', 'history', contractId, isSuperAdmin.value],
+  query: () => getContractHistory(contractId, isSuperAdmin.value),
 })
 
 const history = computed(() => data.value?.data ?? [])

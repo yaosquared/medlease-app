@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, h, resolveComponent } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useQuery } from '@pinia/colada'
 import type { TableColumn, TableRow } from '@nuxt/ui'
 
 import { getContracts } from '@/apis/contracts'
 import { CONTRACTS_PER_PAGE, STATUS_OPTIONS } from '@/constants/contracts'
+import { useAuthStore } from '@/stores/auth'
 import type { TContract } from '@/types/contract'
 import { formatDate, formatRate } from '@/utils/format'
 
+const { isSuperAdmin } = storeToRefs(useAuthStore())
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 
@@ -18,7 +21,13 @@ const debouncedSearch = ref('')
 const statusFilter = ref<number | null>(null)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['contracts', page.value, statusFilter.value, debouncedSearch.value],
+  key: () => [
+    'contracts',
+    page.value,
+    statusFilter.value,
+    debouncedSearch.value,
+    isSuperAdmin.value,
+  ],
   query: () =>
     getContracts({
       pageParam: page.value,
@@ -28,6 +37,7 @@ const { data, asyncStatus, error } = useQuery({
           ? [statusFilter.value]
           : undefined,
       search: debouncedSearch.value || undefined,
+      isSuperAdmin: isSuperAdmin.value,
     }),
 })
 
@@ -109,7 +119,7 @@ const onStatusChange = (value: number | null) => {
 <template>
   <div class="h-full flex flex-col gap-4">
     <div v-if="error" class="flex-1 flex justify-center items-center text-red-500">
-      Failed to load users
+      Failed to load contracts
     </div>
     <div v-else class="flex flex-col gap-4">
       <div class="flex flex-col md:flex-row items-center gap-2">

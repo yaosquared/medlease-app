@@ -16,7 +16,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { formatCurrency, formatDate } from '@/utils/format'
 
-const { isOrgAdmin, isStaff, isClinic, isVendor } = storeToRefs(useAuthStore())
+const { isSuperAdmin, isOrgAdmin, isStaff, isClinic, isVendor } = storeToRefs(useAuthStore())
 const UBadge = resolveComponent('UBadge')
 const router = useRouter()
 const isMobile = useMediaQuery('(max-width: 425px)')
@@ -28,13 +28,20 @@ const statusFilter = ref<number | null>(null)
 const showCreatePaymentModal = ref(false)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['payments', page.value, statusFilter.value, debouncedSearch.value],
+  key: () => [
+    'payments',
+    page.value,
+    statusFilter.value,
+    debouncedSearch.value,
+    isSuperAdmin.value,
+  ],
   query: () =>
     getPayments({
       pageParam: page.value,
       limit: PAYMENTS_PER_PAGE,
       status: statusFilter.value ?? undefined,
       search: debouncedSearch.value || undefined,
+      isSuperAdmin: isSuperAdmin.value,
     }),
 })
 

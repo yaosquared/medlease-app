@@ -1,5 +1,4 @@
 import api from '@/utils/axios'
-import type { TEquipmentPayload } from '@/types/equipments'
 import type { TCreateEquipmentSchema, TUpdateEquipmentSchema } from '@/schemas/equipment'
 
 export const getEquipments = async ({
@@ -7,13 +6,17 @@ export const getEquipments = async ({
   limit = 10,
   status,
   search,
+  isSuperAdmin = false,
 }: {
   pageParam: number
   limit?: number
   status?: number
   search?: string
+  isSuperAdmin?: boolean
 }) => {
-  const res = await api.get(`/api/admin/equipments`, {
+  const baseUrl = isSuperAdmin ? `/api/super-admin/equipments` : `/api/admin/equipments`
+
+  const res = await api.get(baseUrl, {
     params: { page: pageParam, limit, status, search },
   })
   return res.data

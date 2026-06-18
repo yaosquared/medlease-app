@@ -13,11 +13,11 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { formatCurrency, formatDate } from '@/utils/format'
 
+const { isSuperAdmin, isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const queryCache = useQueryCache()
-const { isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
 
 const contractId = route.params.contractId as string
 const showApproveConfirmationModal = ref(false)
@@ -25,8 +25,8 @@ const showCancelConfirmationModal = ref(false)
 const showCompleteConfirmationModal = ref(false)
 
 const { data, asyncStatus } = useQuery({
-  key: () => ['contract', contractId],
-  query: () => getContractById(contractId),
+  key: () => ['contract', contractId, isSuperAdmin.value],
+  query: () => getContractById(contractId, isSuperAdmin.value),
 })
 
 const contract = computed(() => data.value?.data)

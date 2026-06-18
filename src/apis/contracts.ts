@@ -7,6 +7,7 @@ export const getContracts = async (params: {
   statuses?: number[]
   excludePending?: boolean
   search?: string
+  isSuperAdmin?: boolean
 }) => {
   const query = new URLSearchParams()
   query.append('page', String(params.pageParam))
@@ -15,7 +16,9 @@ export const getContracts = async (params: {
   if (params.excludePending) query.append('excludePending', 'true')
   if (params.search) query.append('search', params.search)
 
-  const res = await api.get(`/api/admin/contracts?${query.toString()}`)
+  const baseUrl = params.isSuperAdmin ? `/api/super-admin/contracts` : `/api/admin/contracts`
+
+  const res = await api.get(`${baseUrl}?${query.toString()}`)
   return res.data
 }
 
@@ -24,13 +27,17 @@ export const createContract = async (payload: TContractPayload) => {
   return res.data
 }
 
-export const getContractById = async (contractId: string) => {
-  const res = await api.get(`/api/admin/contracts/${contractId}`)
+export const getContractById = async (contractId: string, isSuperAdmin?: boolean) => {
+  const baseUrl = isSuperAdmin ? `/api/super-admin/contracts` : `/api/admin/contracts`
+
+  const res = await api.get(`${baseUrl}/${contractId}`)
   return res.data
 }
 
-export const getContractHistory = async (contractId: string) => {
-  const res = await api.get(`/api/admin/contracts/${contractId}/history`)
+export const getContractHistory = async (contractId: string, isSuperAdmin?: boolean) => {
+  const baseUrl = isSuperAdmin ? `/api/super-admin/contracts` : `/api/admin/contracts`
+
+  const res = await api.get(`${baseUrl}/${contractId}/history`)
   return res.data
 }
 

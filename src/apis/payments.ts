@@ -6,13 +6,17 @@ export const getPayments = async ({
   limit = 10,
   status,
   search,
+  isSuperAdmin = false,
 }: {
   pageParam: number
   limit?: number
   status?: number
   search?: string
+  isSuperAdmin?: boolean
 }) => {
-  const res = await api.get(`/api/admin/payments`, {
+  const baseUrl = isSuperAdmin ? `/api/super-admin/payments` : `/api/admin/payments`
+
+  const res = await api.get(baseUrl, {
     params: { page: pageParam, limit, status, search },
   })
   return res.data
@@ -23,8 +27,10 @@ export const createPayment = async (payload: TCreatePaymentSchema) => {
   return res.data
 }
 
-export const getPaymentById = async (paymentId: string) => {
-  const res = await api.get(`/api/admin/payments/${paymentId}`)
+export const getPaymentById = async (paymentId: string, isSuperAdmin?: boolean) => {
+  const baseUrl = isSuperAdmin ? `/api/super-admin/payments` : `/api/admin/payments`
+
+  const res = await api.get(`${baseUrl}/${paymentId}`)
   return res.data
 }
 

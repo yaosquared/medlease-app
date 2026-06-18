@@ -15,7 +15,7 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { formatRate } from '@/utils/format'
 
-const { isOrgAdmin, isStaff, isVendor, isClinic } = storeToRefs(useAuthStore())
+const { isSuperAdmin, isOrgAdmin, isStaff, isVendor, isClinic } = storeToRefs(useAuthStore())
 const router = useRouter()
 const isMobile = useMediaQuery('(max-width: 425px)')
 
@@ -26,13 +26,20 @@ const statusFilter = ref<number | null>(null)
 const showCreateEquipmentModal = ref(false)
 
 const { data, asyncStatus, error } = useQuery({
-  key: () => ['equipments', page.value, statusFilter.value, debouncedSearch.value],
+  key: () => [
+    'equipments',
+    page.value,
+    statusFilter.value,
+    debouncedSearch.value,
+    isSuperAdmin.value,
+  ],
   query: () =>
     getEquipments({
       pageParam: page.value,
       limit: EQUIPMENTS_PER_PAGE,
       status: statusFilter.value ?? undefined,
       search: debouncedSearch.value || undefined,
+      isSuperAdmin: isSuperAdmin.value,
     }),
 })
 

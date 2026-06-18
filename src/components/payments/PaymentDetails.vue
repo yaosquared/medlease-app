@@ -14,15 +14,15 @@ import { PENALTY_REASON_OPTIONS } from '@/constants/payments'
 const route = useRoute()
 const toast = useToast()
 const queryCache = useQueryCache()
-const { isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
+const { isSuperAdmin, isOrgAdmin, isVendor } = storeToRefs(useAuthStore())
 
 const paymentId = route.params.paymentId as string
 const showPenaltyModal = ref(false)
 const showDeleteConfirmationtModal = ref(false)
 
 const { data, asyncStatus } = useQuery({
-  key: () => ['payment', paymentId],
-  query: () => getPaymentById(paymentId),
+  key: () => ['payment', paymentId, isSuperAdmin.value],
+  query: () => getPaymentById(paymentId, isSuperAdmin.value),
 })
 
 const { mutate: confirm, asyncStatus: confirmStatus } = useMutation({
@@ -48,11 +48,7 @@ const statusBadge = computed(() => {
     case 0:
       return { label: 'Pending', color: 'warning' as const }
     case 1:
-      return { label: 'Processing', color: 'info' as const }
-    case 2:
       return { label: 'Paid', color: 'success' as const }
-    case 3:
-      return { label: 'Overdue', color: 'error' as const }
     default:
       return { label: 'Unknown', color: 'neutral' as const }
   }
@@ -63,7 +59,6 @@ const statusBadge = computed(() => {
   <USkeleton v-if="asyncStatus === 'loading'" class="h-64 w-full" />
   <UCard v-else-if="payment">
     <template #header>
-      <!-- <div class="flex items-start justify-between gap-2"> -->
       <div
         class="flex-1 min-w-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-2"
       >

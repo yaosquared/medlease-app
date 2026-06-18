@@ -34,6 +34,9 @@ const navItems = computed<NavigationMenuItem[]>(() => {
     SuperAdmin: [
       { label: 'Organizations', icon: 'i-lucide-building-2', to: '/organizations' },
       { label: 'Users', icon: 'i-lucide-users', to: '/users' },
+      { label: 'Equipments', icon: 'i-lucide-monitor', to: '/equipments' },
+      { label: 'Contracts', icon: 'i-lucide-file-text', to: '/contracts' },
+      { label: 'Payments', icon: 'i-lucide-credit-card', to: '/payments' },
     ],
     OrgAdmin: [
       { label: 'Organization', icon: 'i-lucide-building-2', to: '/organizations/me' },
