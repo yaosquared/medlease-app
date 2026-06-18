@@ -7,7 +7,7 @@ import AppLayout from './components/layouts/AppLayout.vue'
 
 const route = useRoute()
 
-const layout = computed(() => (route.meta.layout === 'auth' ? AuthLayout : AppLayout))
+const layout = computed(() => (route.meta.layout === 'app' ? AppLayout : AuthLayout))
 </script>
 
 <template>
