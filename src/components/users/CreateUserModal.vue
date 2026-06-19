@@ -33,10 +33,10 @@ const {
   error,
 } = useMutation({
   mutation: (payload: TCreateUserSchema) => createOwnOrgUser(payload),
-  onSuccess: () => {
+  onSuccess: (data) => {
     open.value = false
     Object.assign(state, initialState)
-    toast.add({ title: 'User created successfully', color: 'success' })
+    toast.add({ title: data?.message ?? 'User created successfully', color: 'success' })
   },
   onError: (err: AxiosError<TApiErrorResponse>) => {
     toast.add({
