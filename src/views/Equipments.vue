@@ -59,7 +59,7 @@ const onStatusChange = (value: number | null) => {
     </div>
     <template v-else>
       <div class="flex flex-col md:flex-row md:justify-between items-center gap-2 shrink-0">
-        <div class="w-full md:w-1/2 flex flex-col md:flex-row gap-2">
+        <div class="w-full lg:w-1/2 flex flex-col md:flex-row gap-2">
           <SearchBar
             v-model="searchQuery"
             placeholder="Search for equipment name..."
@@ -77,7 +77,7 @@ const onStatusChange = (value: number | null) => {
               :items="STATUS_OPTIONS"
               value-key="value"
               placeholder="Filter by status"
-              :class="['cursor-pointer', isClinic ? 'w-full md:w-48' : 'w-48']"
+              :class="['cursor-pointer', isClinic || isSuperAdmin ? 'w-full md:w-48' : 'w-48']"
               @update:model-value="onStatusChange"
             />
             <UButton
@@ -93,7 +93,7 @@ const onStatusChange = (value: number | null) => {
         <UButton
           v-if="!isMobile && isVendor && (isOrgAdmin || isStaff)"
           icon="i-lucide-plus"
-          class="cursor-pointer ml-auto"
+          class="cursor-pointer ml-auto whitespace-nowrap"
           @click="showCreateEquipmentModal = true"
         >
           Add Equipment

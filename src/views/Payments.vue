@@ -128,7 +128,7 @@ const onStatusChange = (value: number | null) => {
     </div>
     <div v-else class="flex flex-col gap-4">
       <div class="flex flex-col md:flex-row md:justify-between items-center gap-2">
-        <div class="w-full md:w-1/2 flex flex-col md:flex-row gap-2">
+        <div class="w-full lg:w-1/2 flex flex-col md:flex-row gap-2">
           <SearchBar
             v-model="searchQuery"
             placeholder="Search for payment reference..."
@@ -146,7 +146,7 @@ const onStatusChange = (value: number | null) => {
               :items="PAYMENT_STATUS_OPTIONS"
               value-key="value"
               placeholder="Filter by status"
-              :class="['w-1/2 md:w-48 cursor-pointer', { 'w-full': isVendor }]"
+              :class="['cursor-pointer', isVendor || isSuperAdmin ? 'w-full md:w-48' : 'w-48']"
               @update:model-value="onStatusChange"
             />
             <UButton
@@ -162,19 +162,19 @@ const onStatusChange = (value: number | null) => {
         <UButton
           v-if="!isMobile && isClinic && (isOrgAdmin || isStaff)"
           icon="i-lucide-plus"
-          class="cursor-pointer ml-auto"
+          class="cursor-pointer ml-auto whitespace-nowrap"
           @click="showCreatePaymentModal = true"
         >
           Add Payment
         </UButton>
       </div>
       <div class="flex flex-col gap-4">
-        <div class="w-[calc(100vw-2rem)] md:w-auto overflow-x-auto">
+        <div class="w-[calc(100vw-2rem)] lg:w-auto overflow-x-auto">
           <UTable
             :data="rows"
             :columns="columns"
             :loading="asyncStatus === 'loading'"
-            class="flex-1 cursor-pointer"
+            class="cursor-pointer"
             @select="goToDetails"
           />
         </div>

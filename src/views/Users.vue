@@ -124,7 +124,7 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
     </div>
     <div v-else class="flex flex-col gap-4">
       <div class="flex flex-col md:flex-row md:justify-between items-center gap-2">
-        <div class="w-full md:w-1/2 flex flex-col md:flex-row gap-2">
+        <div class="w-full lg:w-1/2 flex flex-col md:flex-row gap-2">
           <SearchBar
             v-model="searchQuery"
             class="md:max-w-sm"
@@ -142,7 +142,7 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
               :items="roleFilterOptions"
               value-key="value"
               placeholder="Filter by role"
-              :class="['cursor-pointer', isSuperAdmin ? 'w-full' : 'w-48']"
+              :class="['cursor-pointer', isSuperAdmin ? 'w-full md:w-48' : 'w-48']"
               @update:model-value="onRoleChange"
             />
             <UButton
@@ -158,7 +158,7 @@ const goToDetails = (_e: Event, row: TableRow<TUser>) => {
         <UButton
           v-if="!isMobile && isOrgAdmin"
           icon="i-lucide-plus"
-          class="cursor-pointer ml-auto"
+          class="cursor-pointer ml-auto whitespace-nowrap"
           @click="showCreateUserModal = true"
         >
           Add User
